@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Post-rsses on theDB</title>
+    <link>http://username.github.io/post/index.xml</link>
+    <description>Recent content in Post-rsses on theDB</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>dbolella@gmail.com (Danny Bolella)</managingEditor>
+    <webMaster>dbolella@gmail.com (Danny Bolella)</webMaster>
+    <lastBuildDate>Wed, 28 Sep 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://username.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Realm</title>
+      <link>http://username.github.io/post/2016-09-28-realm/</link>
+      <pubDate>Wed, 28 Sep 2016 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>http://username.github.io/post/2016-09-28-realm/</guid>
+      <description>
+
+&lt;p&gt;Realm is a mobile database that is sort of a replacement to SQLlite/Core Data that is known to be lightweight and even faster than it&amp;rsquo;s competition.  Realm is free and relatively easy to include in your project (though many comment that it&amp;rsquo;s quite difficult to remove).  One of the greatest advantages is that it flattens some of the traditional Data Access boilerplate and merges Models with Objects.&lt;/p&gt;
+
+&lt;p&gt;With Realm 2.0, a brand new Platform has been released complete with an object server.  Whereas before a Realm was local to an app, it can now be synced to a server side database.  This removes the dependency of translating and sending Realm data manually to some other server/cloud based database solution.  It even handles the syncing automatically with very little code needed to setup.&lt;/p&gt;
+
+&lt;p&gt;Is Realm the best solution: it depends.  But especially with the new platform, it makes it worth while to consider.&lt;/p&gt;
+
+&lt;h2 id=&#34;resources-to-get-started&#34;&gt;Resources to Get Started&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;realm.io&#34;&gt;Realm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://realm.io/news/best-practices-pain-points-mobile-networking-rest-api-failures/&#34;&gt;Realm Platform vs RESTful APIs&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;tech-details&#34;&gt;Tech Details&lt;/h2&gt;
+
+&lt;h3 id=&#34;add-to-project&#34;&gt;Add to Project&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://realm.io/docs/realm-mobile-platform/get-started/&#34;&gt;Get all Realm items here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In the package you downloaded, find the SDK folder appropriate for your project.  Take the framework files and add them to your project.&lt;/p&gt;
+
+&lt;p&gt;Another item in your project is the Xcode plugin.  This plugin adds a Realm Object option when creating a New File.&lt;/p&gt;
+
+&lt;p&gt;Lastly, there is the Realm Browser app for macOS.  This is a tool to explore the realm file created for your app.  After running your app with realm the first time, locate the default.realm file in your app&amp;rsquo;s data and open with the Browser.&lt;/p&gt;
+
+&lt;h2 id=&#34;tutorial&#34;&gt;Tutorial&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://realm.io/docs/swift/latest/&#34;&gt;Simple Tutorial&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;creating-an-object&#34;&gt;Creating an object&lt;/h2&gt;
+
+&lt;p&gt;Realm will be different for anyone who is used to creating a database table schema and then data object models to capture it, or vice-versa in previous projects.  Since the database is local, there&amp;rsquo;s no need to do this work.  Instead, we create the model in the code, and the table schema (as well as the table itself) is automatically created and maintained in a .realm file.&lt;/p&gt;
+
+&lt;p&gt;To do this, you just create a new class that extends the Realm Object.  Here&amp;rsquo;s a quick sample:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;class Person: Object {
+      dynamic var name = &amp;quot;&amp;quot;
+      dynamic var age = 0
+}&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Immediately we can start creating objects using our new class:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let danny = Person()
+danny.name = &amp;quot;Danny&amp;quot;
+danny.age = 27&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;We now have this class defined in our code and an instance of this class.  However, we still do not have this stored in a Realm table, nor do we even have one defined.  So, let&amp;rsquo;s start by creating a Realm (which is essentially a local database):&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let realm = try! Realm()&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This code sets up a Realm instance that is synced with our default realm file (automatically default.realm).  (Note: you can specify your own realm files).  In this code, because default.realm does not exist, it automatically creates the file.&lt;/p&gt;
+
+&lt;p&gt;Did you catch that?  We just made a database by initializing a Realm.  That&amp;rsquo;s how simple it is to get going.  Now watch what it takes to create a table complete with a schema and an entry:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;try! realm.write {
+    realm.add(danny)
+}&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;That&amp;rsquo;s it.  By simply setting a write block on the realm and adding our object, Realm has automatically taken care of setting up our table.  How can we confirm?&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let people = realm.objects(Person.self)
+print(people.count)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;By calling the objects function on our realm, we request all entries that are of the type Person.  When we print the count of the results, we should expect to see 1.  If we wanted to filter for people whose age is 21 and over, we can add the filter to our query:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let people = realm.objects(Person.self).filter(&amp;quot;age &amp;gt;= 21&amp;quot;)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Using the filter function, we can add logic to get the results we want.&lt;/p&gt;
+
+&lt;p&gt;Lastly, if we want to simultaneously update an object as well as it&amp;rsquo;s corresponding entry, we can do the following:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let firstPerson = realm.objects(Person.self).first
+try! realm.write {
+    firstPerson!.age = 28
+}&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;experiment&#34;&gt;Experiment&lt;/h2&gt;
+
+&lt;h3 id=&#34;can-we-create-a-common-realm-util&#34;&gt;Can we create a common Realm Util?&lt;/h3&gt;
+
+&lt;p&gt;Realm does allow for simple/plain code.  For instance, models are extremely easy to setup and queries are very standard.  Though you will quickly find blocks of code being repeated across different models.  Also, there are no built-in converters, for example, JSON to Object.  To be clear, there are, without a doubt, numerous edge cases.  However, there are enough generic functions that, I feel, we can collect into a simple util class.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Multer &amp; SwiftHTTP</title>
+      <link>http://username.github.io/post/2016-09-21-multer-and-swifthttp/</link>
+      <pubDate>Wed, 21 Sep 2016 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>http://username.github.io/post/2016-09-21-multer-and-swifthttp/</guid>
+      <description>
+
+&lt;p&gt;For a small demo app I was building, I needed to upload a file from my app to my server to be saved locally.  Straight forward, especially since this was just for a demo.  What was frustrating though is I realized that trying to do this quickly with built-in code on both ends felt like it took way more than I wanted to get into (granted, never really did this before with these platforms so there&amp;rsquo;s that, too, I suppose).&lt;/p&gt;
+
+&lt;p&gt;So a few searches later, I came across two tools that simplified it to just a few lines of code on either side.&lt;/p&gt;
+
+&lt;p&gt;On the Swift side, SwiftHTTP simplified the POST call to a single function call that uses it&amp;rsquo;s own Upload class and a callback.  That&amp;rsquo;s all I wanted to do.  Done.&lt;/p&gt;
+
+&lt;p&gt;On the Node.js side, I was already using express to get a server running.  What&amp;rsquo;s cool is express offers Multer as a solution. Multer says it&amp;rsquo;s really for forms that could use uploading, but it&amp;rsquo;s file uploading setup is simple enough to single-out.  How it works is that for the Request object, they extend it to not only have a body object, but also a file object.  So all you need to do is specify that you&amp;rsquo;re looking for a file in your post parameters and bam, you have your file.&lt;/p&gt;
+
+&lt;p&gt;Easy enough!  In 20 lines of code across two platforms I had file uploading working.&lt;/p&gt;
+
+&lt;h2 id=&#34;resources-to-get-started&#34;&gt;Resources to Get Started&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;swift.org&#34;&gt;Swift&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/daltoniam/SwiftHTTP&#34;&gt;SwiftHTTP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/expressjs/multer&#34;&gt;Multer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;tech-details&#34;&gt;Tech Details&lt;/h2&gt;
+
+&lt;h3 id=&#34;my-implementation&#34;&gt;My implementation&lt;/h3&gt;
+
+&lt;p&gt;Fastest way is to follow the install instructions for both.  From there, here&amp;rsquo;s the code I used:&lt;/p&gt;
+
+&lt;p&gt;SwiftHTTP&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func upload() {
+        do {
+            let opt = try HTTP.POST(&amp;quot;http://localhost:3000/photo&amp;quot;, parameters: [&amp;quot;photo&amp;quot;: Upload(fileUrl: photoFileURL),&amp;quot;title&amp;quot;: titleString])
+            opt.start { response in
+                self.performSegue(withIdentifier: &amp;quot;finishRecording&amp;quot;, sender: nil)
+            }
+        } catch let error {
+            print(&amp;quot;got an error creating the request: \(error)&amp;quot;)
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Multer&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;app.post(&#39;/photo&#39;, upload.single(&#39;photo&#39;), function (req, res, next) {
+  var tmp_path = req.file.path;
+  var target_path = &#39;uploads/&#39; + req.file.originalname;
+  var src = fs.createReadStream(tmp_path);
+  var dest = fs.createWriteStream(target_path);
+  src.pipe(dest);
+  src.on(&#39;end&#39;, function() { 
+    console.log(&amp;quot;UPLOAD COMPLETE&amp;quot;)
+    res.send(&amp;quot;complete&amp;quot;); 
+  });
+  src.on(&#39;error&#39;, function(err) { res.send(&amp;quot;error&amp;quot;); });
+})
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Kitura</title>
+      <link>http://username.github.io/post/2016-09-14-kitura/</link>
+      <pubDate>Wed, 14 Sep 2016 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>http://username.github.io/post/2016-09-14-kitura/</guid>
+      <description>
+
+&lt;p&gt;Swift is an open-source programming language that was started by Apple and is now supported by a rapidly growing community.  The Swift Evolution program will help steer the language to become not only more stable, but also modern and capable.  This also includes the goal of making Swift a truly cross-platform language, a vast departure for Apple.&lt;/p&gt;
+
+&lt;p&gt;Many areas of software are exploring Swift, including VR, AI, and web.  A big area that has been gaining support is using swift as a server-side solution.  There are a number of possible advantages to using Swift this way, but some of the greatest reasons, in my opinion, are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Code reusability&lt;/li&gt;
+&lt;li&gt;Focus for most code can be on a single, modern language&lt;/li&gt;
+&lt;li&gt;Fewer languages/technologies needed for full-stack&lt;/li&gt;
+&lt;li&gt;Client side and server side developers can more easily be cross-functional&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Recently, Swift.org made the announcement of the Server APIs Project.  As of right now, most of Swift&amp;rsquo;s networking capabilities are actually using C libraries.  The project unites most of the large Swift Server-side project owners (IBM, Perfect, etc) to push forward native Swift capabilities.&lt;/p&gt;
+
+&lt;p&gt;A huge player in the server-side effort is IBM with their product, Kitura.  IBM made a partnership to drive business users towards Apple by supporting a number of Apple technologies.  Swift has become a huge player in this partnership for IBM and they&amp;rsquo;ve quickly latched on to the Swift journey (e.g. they created the Swift Sandbox, their own custom Swift Package Manager, and all of their mobile apps are written in Swift).  A furthering of this partnership has been in developing Kitura, and server-side Swift framework.  Though not the only solution out there (see Perfect, Vapor, and others), it comes with a slew of features that make it stand out.  Specifically, IBM has surrounded it with many of it&amp;rsquo;s other services including BlueMix, Cloud Tools, and even Watson integration.  And to measure the support/interest Kitura is generating, IBM had a special session at WWDC 2016 specifically on server-side Swift and, after it&amp;rsquo;s latest release, has been trending pretty rapidly on Github.&lt;/p&gt;
+
+&lt;h2 id=&#34;resources-to-get-started&#34;&gt;Resources to Get Started&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;swift.org&#34;&gt;Swift&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.kitura.io&#34;&gt;Kitura&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/IBM-Swift/Kitura#getting-started&#34;&gt;Kitura Git Repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://realm.io/news/slug-edward-jiang-server-side-swift/&#34;&gt;Realm Talk: Super Spectacular Server Side Swift!&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;tech-details&#34;&gt;Tech Details&lt;/h2&gt;
+
+&lt;h3 id=&#34;installation&#34;&gt;Installation&lt;/h3&gt;
+
+&lt;p&gt;The easiest way to get going is to clone IBM&amp;rsquo;s &lt;a href=&#34;https://github.com/IBM-Swift/Kitura-Sample&#34; title=&#34;Sample&#34;&gt;sample application&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;tutorial&#34;&gt;Tutorial&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://developer.ibm.com/swift/2016/02/22/building-end-end-cloud-apps-using-swift-kitura/&#34;&gt;Simple Tutorial&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;using-in-xcode&#34;&gt;Using in Xcode&lt;/h3&gt;
+
+&lt;p&gt;If you&amp;rsquo;re a Mac/Xcode user, there&amp;rsquo;s a huge advantage in using Xcode to not only develop your Kitura server, but also debug and analyze it.  So how do you convert your Kitura project to an Xcode project?  Swift is able to self-generate an Xcode project with the following run in terminal:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;swift package generate-xcodeproj&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;When you open the new project in Xcode, just change the scheme to the executable.  Now you can run the sever.  Trying placing breakpoints to explore debugging.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/IBM-Swift/Kitura/wiki/Building-your-Kitura-application-in-Xcode&#34;&gt;More info&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;package-manager&#34;&gt;Package Manager&lt;/h3&gt;
+
+&lt;p&gt;IBM has it&amp;rsquo;s own Package Manager to enhance the Swift package Manager.  Add dependencies in the following format in the Package.swift file:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;.Package(url: &amp;quot;https://github.com/IBM-Swift/Kitura.git&amp;quot;, majorVersion: 0, minor: 30)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;To find more IBM featured swift packages, check out their &lt;a href=&#34;https://swiftpkgs.ng.bluemix.net/?cm_mc_uid=38801362449714744605356&amp;amp;cm_mc_sid_50200000=1474559147&#34;&gt;catalog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;routing&#34;&gt;Routing&lt;/h3&gt;
+
+&lt;p&gt;The low-level way to get started is to know how routes work.  The router is a built-in Kitura class that handles requests to your server, which also includes sending out responses.  Let&amp;rsquo;s breakdown the anatomy of a router handler that you would find in the Kitura-Sample project:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;router.&amp;lt;#request type#&amp;gt;(&amp;quot;/&amp;lt;#route title#&amp;gt;&amp;quot;)
+     {request, response, next in
+        response.headers[&amp;quot;Content-Type&amp;quot;] = &amp;quot;text/plain; charset=utf-8&amp;quot;
+        &amp;lt;#handle code here#&amp;gt;
+        try response.send(&amp;quot;&amp;lt;#response#&amp;gt;&amp;quot;).end()
+}&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The router class can handle your standard types of requests (e.g. GET, POST, PUT, etc.).  The route title portion specifies the title that will point the router to this specific handler (e.g. example.com/hellowworldhandler).  We get take in the request as well as a pre-formed response.  We see that we can customize our response properties before we send it out.  Now, in the handler block, this is where we can place the Swift code that we want to use to handle this request.  There are essentially no rules here, you can access Swift classes, structs, frameworks, and even Foundation.  Hence why Swift server-side is a desired framework because you can produce a Framework that can be common between your server and your app, reducing and reusing code.  The only thing we need to do is at the end, where we finally send back our response to complete handling the request.  Here&amp;rsquo;s a quick sample:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;router.get(&amp;quot;/helloworld&amp;quot;)
+     {request, response, next in
+        response.headers[&amp;quot;Content-Type&amp;quot;] = &amp;quot;text/plain; charset=utf-8&amp;quot;
+        let hwString = &amp;quot;Hello World&amp;quot;
+        try response.send(hwString).end()
+}&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Simple enough!&lt;/p&gt;
+
+&lt;h3 id=&#34;request-types-including-all&#34;&gt;Request types (including all)&lt;/h3&gt;
+
+&lt;p&gt;A cool route type is &amp;ldquo;all&amp;rdquo;.  A route for &amp;ldquo;all&amp;rdquo; handles every request, even if there&amp;rsquo;s a more specific route.  This is good to catch session, authentications, and also handling the parsing of requests.&lt;/p&gt;
+
+&lt;h3 id=&#34;parsedbody&#34;&gt;ParsedBody&lt;/h3&gt;
+
+&lt;p&gt;Kitura has a built-in request body parser.  The types that we can expect are :&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;JSON&lt;/li&gt;
+&lt;li&gt;URL-encoded form&lt;/li&gt;
+&lt;li&gt;text&lt;/li&gt;
+&lt;li&gt;raw data&lt;/li&gt;
+&lt;li&gt;multi-part&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

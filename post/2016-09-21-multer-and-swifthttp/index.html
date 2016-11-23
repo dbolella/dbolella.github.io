@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Multer &amp; SwiftHTTP</title>
+
+  <meta name="author" content="Danny Bolella" />
+  
+  
+
+  <meta name="generator" content="Hugo 0.17" />
+
+  <link rel="alternate" href="http://username.github.io/index.xml" type="application/rss+xml" title="theDB">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="http://username.github.iocss/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://username.github.iocss/main.css" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="http://username.github.iocss/pygment_highlights.css" />
+  
+  
+  <meta property="og:title" content="Multer &amp; SwiftHTTP" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/post/2016-09-21-multer-and-swifthttp//" />
+  <meta property="og:image" content="img/avatar.jpg" />
+  
+</head>
+
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://username.github.io">theDB</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+          <li>
+          <a title="Blog" href="/">Blog</a>
+  	      </li>
+  	    
+      
+        
+          <li>
+          <a title="About" href="/page/about/">About</a>
+  	      </li>
+  	    
+      
+      </ul>
+    </div>
+
+	<div class="avatar-container">
+	  <div class="avatar-img-border">
+      
+          <a title="theDB" href="http://username.github.io">
+              <img class="avatar-img" src="http://username.github.ioimg/avatar.jpg" alt="theDB" />
+          </a>
+      
+	  </div>
+	</div>
+
+  </div>
+</nav>
+
+
+    <div role="main" class="container main-content">
+
+      
+        
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>Multer &amp; SwiftHTTP</h1>
+      
+        
+      <h2 class="post-subheading">Uploading Swiftly to Node.JS</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on September 21, 2016</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+          
+
+<p>For a small demo app I was building, I needed to upload a file from my app to my server to be saved locally.  Straight forward, especially since this was just for a demo.  What was frustrating though is I realized that trying to do this quickly with built-in code on both ends felt like it took way more than I wanted to get into (granted, never really did this before with these platforms so there&rsquo;s that, too, I suppose).</p>
+
+<p>So a few searches later, I came across two tools that simplified it to just a few lines of code on either side.</p>
+
+<p>On the Swift side, SwiftHTTP simplified the POST call to a single function call that uses it&rsquo;s own Upload class and a callback.  That&rsquo;s all I wanted to do.  Done.</p>
+
+<p>On the Node.js side, I was already using express to get a server running.  What&rsquo;s cool is express offers Multer as a solution. Multer says it&rsquo;s really for forms that could use uploading, but it&rsquo;s file uploading setup is simple enough to single-out.  How it works is that for the Request object, they extend it to not only have a body object, but also a file object.  So all you need to do is specify that you&rsquo;re looking for a file in your post parameters and bam, you have your file.</p>
+
+<p>Easy enough!  In 20 lines of code across two platforms I had file uploading working.</p>
+
+<h2 id="resources-to-get-started">Resources to Get Started</h2>
+
+<ul>
+<li><a href="swift.org">Swift</a></li>
+<li><a href="https://github.com/daltoniam/SwiftHTTP">SwiftHTTP</a></li>
+<li><a href="https://github.com/expressjs/multer">Multer</a></li>
+</ul>
+
+<h2 id="tech-details">Tech Details</h2>
+
+<h3 id="my-implementation">My implementation</h3>
+
+<p>Fastest way is to follow the install instructions for both.  From there, here&rsquo;s the code I used:</p>
+
+<p>SwiftHTTP</p>
+
+<pre><code>func upload() {
+        do {
+            let opt = try HTTP.POST(&quot;http://localhost:3000/photo&quot;, parameters: [&quot;photo&quot;: Upload(fileUrl: photoFileURL),&quot;title&quot;: titleString])
+            opt.start { response in
+                self.performSegue(withIdentifier: &quot;finishRecording&quot;, sender: nil)
+            }
+        } catch let error {
+            print(&quot;got an error creating the request: \(error)&quot;)
+        }
+    }
+</code></pre>
+
+<p>Multer</p>
+
+<pre><code>app.post('/photo', upload.single('photo'), function (req, res, next) {
+  var tmp_path = req.file.path;
+  var target_path = 'uploads/' + req.file.originalname;
+  var src = fs.createReadStream(tmp_path);
+  var dest = fs.createWriteStream(target_path);
+  src.pipe(dest);
+  src.on('end', function() { 
+    console.log(&quot;UPLOAD COMPLETE&quot;)
+    res.send(&quot;complete&quot;); 
+  });
+  src.on('error', function(err) { res.send(&quot;error&quot;); });
+})
+</code></pre>
+
+      </article>
+
+      <ul class="pager blog-pager">
+        
+        <li class="previous">
+          <a href="http://username.github.io/post/2016-09-14-kitura/" data-toggle="tooltip" data-placement="top" title="Kitura">&larr; Previous Post</a>
+        </li>
+        
+        
+        <li class="next">
+          <a href="http://username.github.io/post/2016-09-28-realm/" data-toggle="tooltip" data-placement="top" title="Realm">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+
+      
+
+    </div>
+  </div>
+</div>
+
+      
+
+    </div>
+
+    <footer>
+  <div class="container beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          <li>
+            <a href="https://www.facebook.com/dbolella" title="Facebook">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          <li>
+            <a href="https://github.com/dbolella" title="GitHub">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://twitter.com/dbolella" title="Twitter">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="mailto:dbolella@gmail.com" title="Email me">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://linkedin.com/in/danielbolella" title="LinkedIn">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+	    	  
+          <li>
+            <a href="https://stackoverflow.com/users/6132145/danny-b" title="StackOverflow">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+
+    		  <li>
+      			<a href="http://username.github.ioindex.xml" title="RSS">
+      			  <span class="fa-stack fa-lg">
+        				<i class="fa fa-circle fa-stack-2x"></i>
+        				<i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      			  </span>
+      			</a>
+    		  </li>		
+
+        </ul>
+        <p class="copyright text-muted">
+    		  Danny Bolella
+    		  &nbsp;&bull;&nbsp;
+    		  2016
+    		  
+    		  
+    		  &nbsp;&bull;&nbsp;
+    		  <a href="http://username.github.io">theDB</a>
+    		  
+  	    </p>
+  	        
+    		<p class="theme-by text-muted">
+    		  Theme by
+    		  <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
+    		</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="http://username.github.iojs/jquery-1.11.2.min.js"></script>
+<script src="http://username.github.iojs/bootstrap.min.js"></script>
+<script src="http://username.github.iojs/main.js"></script>
+
+
+
+  </body>
+</html>

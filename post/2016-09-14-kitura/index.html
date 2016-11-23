@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Kitura</title>
+
+  <meta name="author" content="Danny Bolella" />
+  
+  
+
+  <meta name="generator" content="Hugo 0.17" />
+
+  <link rel="alternate" href="http://username.github.io/index.xml" type="application/rss+xml" title="theDB">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="http://username.github.iocss/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://username.github.iocss/main.css" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="http://username.github.iocss/pygment_highlights.css" />
+  
+  
+  <meta property="og:title" content="Kitura" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/post/2016-09-14-kitura//" />
+  <meta property="og:image" content="img/avatar.jpg" />
+  
+</head>
+
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://username.github.io">theDB</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+          <li>
+          <a title="Blog" href="/">Blog</a>
+  	      </li>
+  	    
+      
+        
+          <li>
+          <a title="About" href="/page/about/">About</a>
+  	      </li>
+  	    
+      
+      </ul>
+    </div>
+
+	<div class="avatar-container">
+	  <div class="avatar-img-border">
+      
+          <a title="theDB" href="http://username.github.io">
+              <img class="avatar-img" src="http://username.github.ioimg/avatar.jpg" alt="theDB" />
+          </a>
+      
+	  </div>
+	</div>
+
+  </div>
+</nav>
+
+
+    <div role="main" class="container main-content">
+
+      
+        
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>Kitura</h1>
+      
+        
+      <h2 class="post-subheading">Swift, Server-side, Battlestar Galatica</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on September 14, 2016</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+          
+
+<p>Swift is an open-source programming language that was started by Apple and is now supported by a rapidly growing community.  The Swift Evolution program will help steer the language to become not only more stable, but also modern and capable.  This also includes the goal of making Swift a truly cross-platform language, a vast departure for Apple.</p>
+
+<p>Many areas of software are exploring Swift, including VR, AI, and web.  A big area that has been gaining support is using swift as a server-side solution.  There are a number of possible advantages to using Swift this way, but some of the greatest reasons, in my opinion, are:</p>
+
+<ul>
+<li>Code reusability</li>
+<li>Focus for most code can be on a single, modern language</li>
+<li>Fewer languages/technologies needed for full-stack</li>
+<li>Client side and server side developers can more easily be cross-functional</li>
+</ul>
+
+<p>Recently, Swift.org made the announcement of the Server APIs Project.  As of right now, most of Swift&rsquo;s networking capabilities are actually using C libraries.  The project unites most of the large Swift Server-side project owners (IBM, Perfect, etc) to push forward native Swift capabilities.</p>
+
+<p>A huge player in the server-side effort is IBM with their product, Kitura.  IBM made a partnership to drive business users towards Apple by supporting a number of Apple technologies.  Swift has become a huge player in this partnership for IBM and they&rsquo;ve quickly latched on to the Swift journey (e.g. they created the Swift Sandbox, their own custom Swift Package Manager, and all of their mobile apps are written in Swift).  A furthering of this partnership has been in developing Kitura, and server-side Swift framework.  Though not the only solution out there (see Perfect, Vapor, and others), it comes with a slew of features that make it stand out.  Specifically, IBM has surrounded it with many of it&rsquo;s other services including BlueMix, Cloud Tools, and even Watson integration.  And to measure the support/interest Kitura is generating, IBM had a special session at WWDC 2016 specifically on server-side Swift and, after it&rsquo;s latest release, has been trending pretty rapidly on Github.</p>
+
+<h2 id="resources-to-get-started">Resources to Get Started</h2>
+
+<ul>
+<li><a href="swift.org">Swift</a></li>
+<li><a href="http://www.kitura.io">Kitura</a></li>
+<li><a href="https://github.com/IBM-Swift/Kitura#getting-started">Kitura Git Repo</a></li>
+<li><a href="https://realm.io/news/slug-edward-jiang-server-side-swift/">Realm Talk: Super Spectacular Server Side Swift!</a></li>
+</ul>
+
+<h2 id="tech-details">Tech Details</h2>
+
+<h3 id="installation">Installation</h3>
+
+<p>The easiest way to get going is to clone IBM&rsquo;s <a href="https://github.com/IBM-Swift/Kitura-Sample" title="Sample">sample application</a>.</p>
+
+<h3 id="tutorial">Tutorial</h3>
+
+<p><a href="https://developer.ibm.com/swift/2016/02/22/building-end-end-cloud-apps-using-swift-kitura/">Simple Tutorial</a></p>
+
+<h3 id="using-in-xcode">Using in Xcode</h3>
+
+<p>If you&rsquo;re a Mac/Xcode user, there&rsquo;s a huge advantage in using Xcode to not only develop your Kitura server, but also debug and analyze it.  So how do you convert your Kitura project to an Xcode project?  Swift is able to self-generate an Xcode project with the following run in terminal:</p>
+
+<p><code>swift package generate-xcodeproj</code></p>
+
+<p>When you open the new project in Xcode, just change the scheme to the executable.  Now you can run the sever.  Trying placing breakpoints to explore debugging.</p>
+
+<p><a href="https://github.com/IBM-Swift/Kitura/wiki/Building-your-Kitura-application-in-Xcode">More info</a></p>
+
+<h3 id="package-manager">Package Manager</h3>
+
+<p>IBM has it&rsquo;s own Package Manager to enhance the Swift package Manager.  Add dependencies in the following format in the Package.swift file:</p>
+
+<p><code>.Package(url: &quot;https://github.com/IBM-Swift/Kitura.git&quot;, majorVersion: 0, minor: 30)</code></p>
+
+<p>To find more IBM featured swift packages, check out their <a href="https://swiftpkgs.ng.bluemix.net/?cm_mc_uid=38801362449714744605356&amp;cm_mc_sid_50200000=1474559147">catalog</a>.</p>
+
+<h3 id="routing">Routing</h3>
+
+<p>The low-level way to get started is to know how routes work.  The router is a built-in Kitura class that handles requests to your server, which also includes sending out responses.  Let&rsquo;s breakdown the anatomy of a router handler that you would find in the Kitura-Sample project:</p>
+
+<p><code>router.&lt;#request type#&gt;(&quot;/&lt;#route title#&gt;&quot;)
+     {request, response, next in
+        response.headers[&quot;Content-Type&quot;] = &quot;text/plain; charset=utf-8&quot;
+        &lt;#handle code here#&gt;
+        try response.send(&quot;&lt;#response#&gt;&quot;).end()
+}</code></p>
+
+<p>The router class can handle your standard types of requests (e.g. GET, POST, PUT, etc.).  The route title portion specifies the title that will point the router to this specific handler (e.g. example.com/hellowworldhandler).  We get take in the request as well as a pre-formed response.  We see that we can customize our response properties before we send it out.  Now, in the handler block, this is where we can place the Swift code that we want to use to handle this request.  There are essentially no rules here, you can access Swift classes, structs, frameworks, and even Foundation.  Hence why Swift server-side is a desired framework because you can produce a Framework that can be common between your server and your app, reducing and reusing code.  The only thing we need to do is at the end, where we finally send back our response to complete handling the request.  Here&rsquo;s a quick sample:</p>
+
+<p><code>router.get(&quot;/helloworld&quot;)
+     {request, response, next in
+        response.headers[&quot;Content-Type&quot;] = &quot;text/plain; charset=utf-8&quot;
+        let hwString = &quot;Hello World&quot;
+        try response.send(hwString).end()
+}</code></p>
+
+<p>Simple enough!</p>
+
+<h3 id="request-types-including-all">Request types (including all)</h3>
+
+<p>A cool route type is &ldquo;all&rdquo;.  A route for &ldquo;all&rdquo; handles every request, even if there&rsquo;s a more specific route.  This is good to catch session, authentications, and also handling the parsing of requests.</p>
+
+<h3 id="parsedbody">ParsedBody</h3>
+
+<p>Kitura has a built-in request body parser.  The types that we can expect are :</p>
+
+<ul>
+<li>JSON</li>
+<li>URL-encoded form</li>
+<li>text</li>
+<li>raw data</li>
+<li>multi-part</li>
+</ul>
+
+      </article>
+
+      <ul class="pager blog-pager">
+        
+        
+        <li class="next">
+          <a href="http://username.github.io/post/2016-09-21-multer-and-swifthttp/" data-toggle="tooltip" data-placement="top" title="Multer &amp; SwiftHTTP">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+
+      
+
+    </div>
+  </div>
+</div>
+
+      
+
+    </div>
+
+    <footer>
+  <div class="container beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          <li>
+            <a href="https://www.facebook.com/dbolella" title="Facebook">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          <li>
+            <a href="https://github.com/dbolella" title="GitHub">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://twitter.com/dbolella" title="Twitter">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="mailto:dbolella@gmail.com" title="Email me">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://linkedin.com/in/danielbolella" title="LinkedIn">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+	    	  
+          <li>
+            <a href="https://stackoverflow.com/users/6132145/danny-b" title="StackOverflow">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+
+    		  <li>
+      			<a href="http://username.github.ioindex.xml" title="RSS">
+      			  <span class="fa-stack fa-lg">
+        				<i class="fa fa-circle fa-stack-2x"></i>
+        				<i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      			  </span>
+      			</a>
+    		  </li>		
+
+        </ul>
+        <p class="copyright text-muted">
+    		  Danny Bolella
+    		  &nbsp;&bull;&nbsp;
+    		  2016
+    		  
+    		  
+    		  &nbsp;&bull;&nbsp;
+    		  <a href="http://username.github.io">theDB</a>
+    		  
+  	    </p>
+  	        
+    		<p class="theme-by text-muted">
+    		  Theme by
+    		  <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
+    		</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="http://username.github.iojs/jquery-1.11.2.min.js"></script>
+<script src="http://username.github.iojs/bootstrap.min.js"></script>
+<script src="http://username.github.iojs/main.js"></script>
+
+
+
+  </body>
+</html>
