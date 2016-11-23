@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Post-rsses on theDB</title>
-    <link>http://dbolella.github.io/post/index.xml</link>
+    <link>https://dbolella.github.io/post/index.xml</link>
     <description>Recent content in Post-rsses on theDB</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <managingEditor>dbolella@gmail.com (Danny Bolella)</managingEditor>
     <webMaster>dbolella@gmail.com (Danny Bolella)</webMaster>
     <lastBuildDate>Wed, 28 Sep 2016 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://dbolella.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://dbolella.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Realm</title>
-      <link>http://dbolella.github.io/post/2016-09-28-realm/</link>
+      <link>https://dbolella.github.io/post/2016-09-28-realm/</link>
       <pubDate>Wed, 28 Sep 2016 00:00:00 +0000</pubDate>
       <author>dbolella@gmail.com (Danny Bolella)</author>
-      <guid>http://dbolella.github.io/post/2016-09-28-realm/</guid>
+      <guid>https://dbolella.github.io/post/2016-09-28-realm/</guid>
       <description>
 
 &lt;p&gt;Realm is a mobile database that is sort of a replacement to SQLlite/Core Data that is known to be lightweight and even faster than it&amp;rsquo;s competition.  Realm is free and relatively easy to include in your project (though many comment that it&amp;rsquo;s quite difficult to remove).  One of the greatest advantages is that it flattens some of the traditional Data Access boilerplate and merges Models with Objects.&lt;/p&gt;
@@ -105,10 +105,10 @@ try! realm.write {
     
     <item>
       <title>Multer &amp; SwiftHTTP</title>
-      <link>http://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/</link>
+      <link>https://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/</link>
       <pubDate>Wed, 21 Sep 2016 00:00:00 +0000</pubDate>
       <author>dbolella@gmail.com (Danny Bolella)</author>
-      <guid>http://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/</guid>
+      <guid>https://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/</guid>
       <description>
 
 &lt;p&gt;For a small demo app I was building, I needed to upload a file from my app to my server to be saved locally.  Straight forward, especially since this was just for a demo.  What was frustrating though is I realized that trying to do this quickly with built-in code on both ends felt like it took way more than I wanted to get into (granted, never really did this before with these platforms so there&amp;rsquo;s that, too, I suppose).&lt;/p&gt;
@@ -169,10 +169,10 @@ try! realm.write {
     
     <item>
       <title>Kitura</title>
-      <link>http://dbolella.github.io/post/2016-09-14-kitura/</link>
+      <link>https://dbolella.github.io/post/2016-09-14-kitura/</link>
       <pubDate>Wed, 14 Sep 2016 00:00:00 +0000</pubDate>
       <author>dbolella@gmail.com (Danny Bolella)</author>
-      <guid>http://dbolella.github.io/post/2016-09-14-kitura/</guid>
+      <guid>https://dbolella.github.io/post/2016-09-14-kitura/</guid>
       <description>
 
 &lt;p&gt;Swift is an open-source programming language that was started by Apple and is now supported by a rapidly growing community.  The Swift Evolution program will help steer the language to become not only more stable, but also modern and capable.  This also includes the goal of making Swift a truly cross-platform language, a vast departure for Apple.&lt;/p&gt;
