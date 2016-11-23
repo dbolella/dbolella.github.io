@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://dbolella.github.io/</loc>
+    <loc>http://dbolella.github.io/</loc>
     <lastmod>2016-09-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://dbolella.github.io/post/2016-09-28-realm/</loc>
+    <loc>http://dbolella.github.io/post/2016-09-28-realm/</loc>
     <lastmod>2016-09-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/</loc>
+    <loc>http://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/</loc>
     <lastmod>2016-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://dbolella.github.io/post/2016-09-14-kitura/</loc>
+    <loc>http://dbolella.github.io/post/2016-09-14-kitura/</loc>
     <lastmod>2016-09-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://dbolella.github.io/page/about/</loc>
+    <loc>http://dbolella.github.io/page/about/</loc>
   </url>
   
 </urlset>
