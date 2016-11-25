@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Realm</title>
+  <title>Multer &amp; SwiftHTTP</title>
 
   <meta name="author" content="Danny Bolella" />
   
@@ -24,9 +24,9 @@
   <link rel="stylesheet" href="https://dbolella.github.io/css/pygment_highlights.css" />
   
   
-  <meta property="og:title" content="Realm" />
+  <meta property="og:title" content="Multer &amp; SwiftHTTP" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="/post/2016-09-28-realm//" />
+  <meta property="og:url" content="/post/2016-10-28-multer-and-swifthttp//" />
   <meta property="og:image" content="img/avatar.jpg" />
   
 </head>
@@ -86,47 +86,23 @@
 
 
 
-  <div id="header-big-imgs" data-num-img=1 data-img-src-1="/img/path.jpg"></div>
 
-
-<header class="header-section has-img">
-
-<div class="big-img intro-header">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <div class="post-heading">
-          <h1>Realm</h1>
-      
-        
-      <h2 class="post-subheading">Enter into...</h2>
-      
-      
-      
-      
-      <span class="post-meta">Posted on September 28, 2016</span>
-      
-        </div>
-      </div>
-    </div>
-  </div>
-  <span class='img-desc'></span>
-</div>
+<header class="header-section ">
 
 <div class="intro-header no-img">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
         <div class="post-heading">
-          <h1>Realm</h1>
+          <h1>Multer &amp; SwiftHTTP</h1>
       
         
-      <h2 class="post-subheading">Enter into...</h2>
+      <h2 class="post-subheading">Uploading Swiftly to Node.JS</h2>
       
       
       
       
-      <span class="post-meta">Posted on September 28, 2016</span>
+      <span class="post-meta">Posted on October 28, 2016</span>
       
         </div>
       </div>
@@ -144,96 +120,72 @@
       <article role="main" class="blog-post">
           
 
-<p>Realm is a mobile database that is sort of a replacement to SQLlite/Core Data that is known to be lightweight and even faster than it&rsquo;s competition.  Realm is free and relatively easy to include in your project (though many comment that it&rsquo;s quite difficult to remove).  One of the greatest advantages is that it flattens some of the traditional Data Access boilerplate and merges Models with Objects.</p>
+<p>For a small demo app I was building, I needed to upload a file from my app to my server to be saved locally.  Straight forward, especially since this was just for a demo.  What was frustrating though is I realized that trying to do this quickly with built-in code on both ends felt like it took way more than I wanted to get into (granted, never really did this before with these platforms so there&rsquo;s that, too, I suppose).</p>
 
-<p>With Realm 2.0, a brand new Platform has been released complete with an object server.  Whereas before a Realm was local to an app, it can now be synced to a server side database.  This removes the dependency of translating and sending Realm data manually to some other server/cloud based database solution.  It even handles the syncing automatically with very little code needed to setup.</p>
+<p>So a few searches later, I came across two tools that simplified it to just a few lines of code on either side.</p>
 
-<p>Is Realm the best solution: it depends.  But especially with the new platform, it makes it worth while to consider.</p>
+<p>On the Swift side, SwiftHTTP simplified the POST call to a single function call that uses it&rsquo;s own Upload class and a callback.  That&rsquo;s all I wanted to do.  Done.</p>
+
+<p>On the Node.js side, I was already using express to get a server running.  What&rsquo;s cool is express offers Multer as a solution. Multer says it&rsquo;s really for forms that could use uploading, but it&rsquo;s file uploading setup is simple enough to single-out.  How it works is that for the Request object, they extend it to not only have a body object, but also a file object.  So all you need to do is specify that you&rsquo;re looking for a file in your post parameters and bam, you have your file.</p>
+
+<p>Easy enough!  In 20 lines of code across two platforms I had file uploading working.</p>
 
 <h2 id="resources-to-get-started">Resources to Get Started</h2>
 
 <ul>
-<li><a href="realm.io">Realm</a></li>
-<li><a href="https://realm.io/news/best-practices-pain-points-mobile-networking-rest-api-failures/">Realm Platform vs RESTful APIs</a></li>
+<li><a href="swift.org">Swift</a></li>
+<li><a href="https://github.com/daltoniam/SwiftHTTP">SwiftHTTP</a></li>
+<li><a href="https://github.com/expressjs/multer">Multer</a></li>
 </ul>
 
 <h2 id="tech-details">Tech Details</h2>
 
-<h3 id="add-to-project">Add to Project</h3>
+<h3 id="my-implementation">My implementation</h3>
 
-<p><a href="https://realm.io/docs/realm-mobile-platform/get-started/">Get all Realm items here</a></p>
+<p>Fastest way is to follow the install instructions for both.  From there, here&rsquo;s the code I used:</p>
 
-<p>In the package you downloaded, find the SDK folder appropriate for your project.  Take the framework files and add them to your project.</p>
+<p>SwiftHTTP</p>
 
-<p>Another item in your project is the Xcode plugin.  This plugin adds a Realm Object option when creating a New File.</p>
+<pre><code>func upload() {
+        do {
+            let opt = try HTTP.POST(&quot;http://localhost:3000/photo&quot;, parameters: [&quot;photo&quot;: Upload(fileUrl: photoFileURL),&quot;title&quot;: titleString])
+            opt.start { response in
+                self.performSegue(withIdentifier: &quot;finishRecording&quot;, sender: nil)
+            }
+        } catch let error {
+            print(&quot;got an error creating the request: \(error)&quot;)
+        }
+    }
+</code></pre>
 
-<p>Lastly, there is the Realm Browser app for macOS.  This is a tool to explore the realm file created for your app.  After running your app with realm the first time, locate the default.realm file in your app&rsquo;s data and open with the Browser.</p>
+<p>Multer</p>
 
-<h2 id="tutorial">Tutorial</h2>
-
-<p><a href="https://realm.io/docs/swift/latest/">Simple Tutorial</a></p>
-
-<h2 id="creating-an-object">Creating an object</h2>
-
-<p>Realm will be different for anyone who is used to creating a database table schema and then data object models to capture it, or vice-versa in previous projects.  Since the database is local, there&rsquo;s no need to do this work.  Instead, we create the model in the code, and the table schema (as well as the table itself) is automatically created and maintained in a .realm file.</p>
-
-<p>To do this, you just create a new class that extends the Realm Object.  Here&rsquo;s a quick sample:</p>
-
-<p><code>class Person: Object {
-      dynamic var name = &quot;&quot;
-      dynamic var age = 0
-}</code></p>
-
-<p>Immediately we can start creating objects using our new class:</p>
-
-<p><code>let danny = Person()
-danny.name = &quot;Danny&quot;
-danny.age = 27</code></p>
-
-<p>We now have this class defined in our code and an instance of this class.  However, we still do not have this stored in a Realm table, nor do we even have one defined.  So, let&rsquo;s start by creating a Realm (which is essentially a local database):</p>
-
-<p><code>let realm = try! Realm()</code></p>
-
-<p>This code sets up a Realm instance that is synced with our default realm file (automatically default.realm).  (Note: you can specify your own realm files).  In this code, because default.realm does not exist, it automatically creates the file.</p>
-
-<p>Did you catch that?  We just made a database by initializing a Realm.  That&rsquo;s how simple it is to get going.  Now watch what it takes to create a table complete with a schema and an entry:</p>
-
-<p><code>try! realm.write {
-    realm.add(danny)
-}</code></p>
-
-<p>That&rsquo;s it.  By simply setting a write block on the realm and adding our object, Realm has automatically taken care of setting up our table.  How can we confirm?</p>
-
-<p><code>let people = realm.objects(Person.self)
-print(people.count)</code></p>
-
-<p>By calling the objects function on our realm, we request all entries that are of the type Person.  When we print the count of the results, we should expect to see 1.  If we wanted to filter for people whose age is 21 and over, we can add the filter to our query:</p>
-
-<p><code>let people = realm.objects(Person.self).filter(&quot;age &gt;= 21&quot;)</code></p>
-
-<p>Using the filter function, we can add logic to get the results we want.</p>
-
-<p>Lastly, if we want to simultaneously update an object as well as it&rsquo;s corresponding entry, we can do the following:</p>
-
-<p><code>let firstPerson = realm.objects(Person.self).first
-try! realm.write {
-    firstPerson!.age = 28
-}</code></p>
-
-<h2 id="experiment">Experiment</h2>
-
-<h3 id="can-we-create-a-common-realm-util">Can we create a common Realm Util?</h3>
-
-<p>Realm does allow for simple/plain code.  For instance, models are extremely easy to setup and queries are very standard.  Though you will quickly find blocks of code being repeated across different models.  Also, there are no built-in converters, for example, JSON to Object.  To be clear, there are, without a doubt, numerous edge cases.  However, there are enough generic functions that, I feel, we can collect into a simple util class.</p>
+<pre><code>app.post('/photo', upload.single('photo'), function (req, res, next) {
+  var tmp_path = req.file.path;
+  var target_path = 'uploads/' + req.file.originalname;
+  var src = fs.createReadStream(tmp_path);
+  var dest = fs.createWriteStream(target_path);
+  src.pipe(dest);
+  src.on('end', function() { 
+    console.log(&quot;UPLOAD COMPLETE&quot;)
+    res.send(&quot;complete&quot;); 
+  });
+  src.on('error', function(err) { res.send(&quot;error&quot;); });
+})
+</code></pre>
 
       </article>
 
       <ul class="pager blog-pager">
         
         <li class="previous">
-          <a href="https://dbolella.github.io/post/2016-09-21-multer-and-swifthttp/" data-toggle="tooltip" data-placement="top" title="Multer &amp; SwiftHTTP">&larr; Previous Post</a>
+          <a href="https://dbolella.github.io/post/2016-10-14-kitura/" data-toggle="tooltip" data-placement="top" title="Kitura">&larr; Previous Post</a>
         </li>
         
+        
+        <li class="next">
+          <a href="https://dbolella.github.io/post/2016-11-11-realm/" data-toggle="tooltip" data-placement="top" title="Realm">Next Post &rarr;</a>
+        </li>
         
       </ul>
 

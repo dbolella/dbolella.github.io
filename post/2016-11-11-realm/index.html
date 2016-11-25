@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Realm</title>
+
+  <meta name="author" content="Danny Bolella" />
+  
+  
+
+  <meta name="generator" content="Hugo 0.17" />
+
+  <link rel="alternate" href="https://dbolella.github.io/index.xml" type="application/rss+xml" title="theDB">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://dbolella.github.io/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://dbolella.github.io/css/main.css" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="https://dbolella.github.io/css/pygment_highlights.css" />
+  
+  
+  <meta property="og:title" content="Realm" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/post/2016-11-11-realm//" />
+  <meta property="og:image" content="img/avatar.jpg" />
+  
+</head>
+
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://dbolella.github.io/">theDB</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+          <li>
+          <a title="Blog" href="/">Blog</a>
+  	      </li>
+  	    
+      
+        
+          <li>
+          <a title="About" href="/page/about/">About</a>
+  	      </li>
+  	    
+      
+      </ul>
+    </div>
+
+	<div class="avatar-container">
+	  <div class="avatar-img-border">
+      
+          <a title="theDB" href="https://dbolella.github.io/">
+              <img class="avatar-img" src="https://dbolella.github.io/img/avatar.jpg" alt="theDB" />
+          </a>
+      
+	  </div>
+	</div>
+
+  </div>
+</nav>
+
+
+    <div role="main" class="container main-content">
+
+      
+        
+
+
+
+
+  <div id="header-big-imgs" data-num-img=1 data-img-src-1="/img/path.jpg"></div>
+
+
+<header class="header-section has-img">
+
+<div class="big-img intro-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>Realm</h1>
+      
+        
+      <h2 class="post-subheading">Enter into...</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on November 11, 2016</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class='img-desc'></span>
+</div>
+
+<div class="intro-header no-img">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>Realm</h1>
+      
+        
+      <h2 class="post-subheading">Enter into...</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on November 11, 2016</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+          
+
+<p>Realm is a mobile database that is sort of a replacement to SQLlite/Core Data that is known to be lightweight and even faster than it&rsquo;s competition.  Realm is free and relatively easy to include in your project (though many comment that it&rsquo;s quite difficult to remove).  One of the greatest advantages is that it flattens some of the traditional Data Access boilerplate and merges Models with Objects.</p>
+
+<p>With Realm 2.0, a brand new Platform has been released complete with an object server.  Whereas before a Realm was local to an app, it can now be synced to a server side database.  This removes the dependency of translating and sending Realm data manually to some other server/cloud based database solution.  It even handles the syncing automatically with very little code needed to setup.</p>
+
+<p>Is Realm the best solution: it depends.  But especially with the new platform, it makes it worth while to consider.</p>
+
+<h2 id="resources-to-get-started">Resources to Get Started</h2>
+
+<ul>
+<li><a href="realm.io">Realm</a></li>
+<li><a href="https://realm.io/news/best-practices-pain-points-mobile-networking-rest-api-failures/">Realm Platform vs RESTful APIs</a></li>
+</ul>
+
+<h2 id="tech-details">Tech Details</h2>
+
+<h3 id="add-to-project">Add to Project</h3>
+
+<p><a href="https://realm.io/docs/realm-mobile-platform/get-started/">Get all Realm items here</a></p>
+
+<p>In the package you downloaded, find the SDK folder appropriate for your project.  Take the framework files and add them to your project.</p>
+
+<p>Another item in your project is the Xcode plugin.  This plugin adds a Realm Object option when creating a New File.</p>
+
+<p>Lastly, there is the Realm Browser app for macOS.  This is a tool to explore the realm file created for your app.  After running your app with realm the first time, locate the default.realm file in your app&rsquo;s data and open with the Browser.</p>
+
+<h2 id="tutorial">Tutorial</h2>
+
+<p><a href="https://realm.io/docs/swift/latest/">Simple Tutorial</a></p>
+
+<h2 id="creating-an-object">Creating an object</h2>
+
+<p>Realm will be different for anyone who is used to creating a database table schema and then data object models to capture it, or vice-versa in previous projects.  Since the database is local, there&rsquo;s no need to do this work.  Instead, we create the model in the code, and the table schema (as well as the table itself) is automatically created and maintained in a .realm file.</p>
+
+<p>To do this, you just create a new class that extends the Realm Object.  Here&rsquo;s a quick sample:</p>
+
+<p><code>class Person: Object {
+      dynamic var name = &quot;&quot;
+      dynamic var age = 0
+}</code></p>
+
+<p>Immediately we can start creating objects using our new class:</p>
+
+<p><code>let danny = Person()
+danny.name = &quot;Danny&quot;
+danny.age = 27</code></p>
+
+<p>We now have this class defined in our code and an instance of this class.  However, we still do not have this stored in a Realm table, nor do we even have one defined.  So, let&rsquo;s start by creating a Realm (which is essentially a local database):</p>
+
+<p><code>let realm = try! Realm()</code></p>
+
+<p>This code sets up a Realm instance that is synced with our default realm file (automatically default.realm).  (Note: you can specify your own realm files).  In this code, because default.realm does not exist, it automatically creates the file.</p>
+
+<p>Did you catch that?  We just made a database by initializing a Realm.  That&rsquo;s how simple it is to get going.  Now watch what it takes to create a table complete with a schema and an entry:</p>
+
+<p><code>try! realm.write {
+    realm.add(danny)
+}</code></p>
+
+<p>That&rsquo;s it.  By simply setting a write block on the realm and adding our object, Realm has automatically taken care of setting up our table.  How can we confirm?</p>
+
+<p><code>let people = realm.objects(Person.self)
+print(people.count)</code></p>
+
+<p>By calling the objects function on our realm, we request all entries that are of the type Person.  When we print the count of the results, we should expect to see 1.  If we wanted to filter for people whose age is 21 and over, we can add the filter to our query:</p>
+
+<p><code>let people = realm.objects(Person.self).filter(&quot;age &gt;= 21&quot;)</code></p>
+
+<p>Using the filter function, we can add logic to get the results we want.</p>
+
+<p>Lastly, if we want to simultaneously update an object as well as it&rsquo;s corresponding entry, we can do the following:</p>
+
+<p><code>let firstPerson = realm.objects(Person.self).first
+try! realm.write {
+    firstPerson!.age = 28
+}</code></p>
+
+<h2 id="experiment">Experiment</h2>
+
+<h3 id="can-we-create-a-common-realm-util">Can we create a common Realm Util?</h3>
+
+<p>Realm does allow for simple/plain code.  For instance, models are extremely easy to setup and queries are very standard.  Though you will quickly find blocks of code being repeated across different models.  Also, there are no built-in converters, for example, JSON to Object.  To be clear, there are, without a doubt, numerous edge cases.  However, there are enough generic functions that, I feel, we can collect into a simple util class.</p>
+
+      </article>
+
+      <ul class="pager blog-pager">
+        
+        <li class="previous">
+          <a href="https://dbolella.github.io/post/2016-10-28-multer-and-swifthttp/" data-toggle="tooltip" data-placement="top" title="Multer &amp; SwiftHTTP">&larr; Previous Post</a>
+        </li>
+        
+        
+      </ul>
+
+      
+
+    </div>
+  </div>
+</div>
+
+      
+
+    </div>
+
+    <footer>
+  <div class="container beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          <li>
+            <a href="https://www.facebook.com/dbolella" title="Facebook">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          <li>
+            <a href="https://github.com/dbolella" title="GitHub">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://twitter.com/dbolella" title="Twitter">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="mailto:dbolella@gmail.com" title="Email me">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://linkedin.com/in/danielbolella" title="LinkedIn">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+	    	  
+          <li>
+            <a href="https://stackoverflow.com/users/6132145/danny-b" title="StackOverflow">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+
+    		  <li>
+      			<a href="https://dbolella.github.io/index.xml" title="RSS">
+      			  <span class="fa-stack fa-lg">
+        				<i class="fa fa-circle fa-stack-2x"></i>
+        				<i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      			  </span>
+      			</a>
+    		  </li>		
+
+        </ul>
+        <p class="copyright text-muted">
+    		  Danny Bolella
+    		  &nbsp;&bull;&nbsp;
+    		  2016
+    		  
+    		  
+    		  &nbsp;&bull;&nbsp;
+    		  <a href="https://dbolella.github.io/">theDB</a>
+    		  
+  	    </p>
+  	        
+    		<p class="theme-by text-muted">
+    		  Theme by
+    		  <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
+    		</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://dbolella.github.io/js/jquery-1.11.2.min.js"></script>
+<script src="https://dbolella.github.io/js/bootstrap.min.js"></script>
+<script src="https://dbolella.github.io/js/main.js"></script>
+
+
+
+  </body>
+</html>
