@@ -8,8 +8,79 @@
     <language>en-us</language>
     <managingEditor>dbolella@gmail.com (Danny Bolella)</managingEditor>
     <webMaster>dbolella@gmail.com (Danny Bolella)</webMaster>
-    <lastBuildDate>Fri, 11 Nov 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 25 Nov 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://dbolella.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Learning Python</title>
+      <link>https://dbolella.github.io/post/2016-11-25-learning-python-instapaper/</link>
+      <pubDate>Fri, 25 Nov 2016 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>https://dbolella.github.io/post/2016-11-25-learning-python-instapaper/</guid>
+      <description>
+
+&lt;p&gt;My commute these days is long.  I mean 1.5 - 2 hours each way long.  Yeah, I know.&lt;/p&gt;
+
+&lt;p&gt;So since it&amp;rsquo;s so long, I wanted to look into what content I could bring for my long journey each day.  I checked out podcasts, and that&amp;rsquo;s cool.  Audible was fine, but I didn&amp;rsquo;t want to pay (yeah, yeah, I&amp;rsquo;m cheap).  And coding in the car produces some stomach churning results.  So instead, I usually end up reading blogs or articles on some of my favorite sites.  But just as I&amp;rsquo;m able to preload podcasts, I wanted to do the same with my reading.&lt;/p&gt;
+
+&lt;p&gt;Now I know Pocket and Instapaper exist, but the dev in me said, why don&amp;rsquo;t you do something about it?&lt;/p&gt;
+
+&lt;h3 id=&#34;pythoning-my-way&#34;&gt;Pythoning my way&lt;/h3&gt;
+
+&lt;p&gt;Python has been in the back burner of my mind since college.  I fooled around a bit for a little analytics project I was doing in college, but not much since.  So when I decided I wanted to make a site scraper, I decided this could be my opportunity to mess with it.&lt;/p&gt;
+
+&lt;p&gt;What makes my project more tickey from just hitting an RSS feed was that for certain sites (e.g. relevantmagazine.com) they did not provide the actual contents, just info about and a link to the article.  So the goal was to take a feed and use it to grab articles themselves and scrape the info I wanted.&lt;/p&gt;
+
+&lt;h2 id=&#34;what-i-used&#34;&gt;What I Used&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.python.org/&#34;&gt;Python&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/codelucas/newspaper&#34;&gt;Newspaper&lt;/a&gt; by codelucas&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kurtmckee/feedparser&#34;&gt;FeedParser&lt;/a&gt; by kurtmckee&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.crummy.com/software/BeautifulSoup/&#34;&gt;BeautifulSoup&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;the-code&#34;&gt;The code&lt;/h2&gt;
+
+&lt;p&gt;Overall, the code is pretty short.  The reason is because I found three open source packages that significantly reduced my effort and proved to be powerful (when combined).&lt;/p&gt;
+
+&lt;p&gt;Feedparser is simple enough.  It pulls the rss feed from a URL you give it and allows you to explore it.  This is how I was able to get the URL&amp;rsquo;s for my articles.&lt;/p&gt;
+
+&lt;p&gt;Next was Newspaper.  This package specifically tries to be an open source Instapaper.  However, it doesn&amp;rsquo;t work with sites with contentless rss feeds, hence my project remained valuable.  However, it was fantastic at grabbing the full HTML of the page and parsing into the data I wanted (author, title, text, and top image URL in this case).&lt;/p&gt;
+
+&lt;p&gt;The last package, BeautifulSoup was necessary because as much as Newspaper has it&amp;rsquo;s own html parser for the body of an article, it wasn&amp;rsquo;t always reliable.  BS proved to be more powerful and in a single line parsed the articles wonderfully.&lt;/p&gt;
+
+&lt;p&gt;So with these three packages and the use of built-in python code, I was bale to create a script that scraped all the articles and output them in JSON, ready to be consumed in an app or inserted into a database.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;feed = feedparser.parse(str(sys.argv[1]))
+print(feed.feed.title)
+print(repr(len(feed.entries)) + &amp;quot; articles compiled on &amp;quot; + time.strftime(&amp;quot;%m/%d/%Y %H:%M:%S&amp;quot;) + &amp;quot;\n\n&amp;quot;)
+
+for entry in feed.entries:
+	article = Article(entry.link)
+	article.download()
+	article.parse()
+
+	try:
+	  html_string = ElementTree.tostring(article.clean_top_node)
+	except:
+	  html_string = &amp;quot;Error converting html to string.&amp;quot;
+
+	soup = BeautifulSoup(html_string, &#39;html.parser&#39;)
+	a = {
+         &#39;authors&#39;: str(&#39;, &#39;.join(article.authors)), 
+         &#39;title&#39;: article.title,
+         &#39;text&#39;: soup.get_text(),
+         &#39;top_image&#39;: article.top_image
+         }
+
+	pp = pprint.PrettyPrinter(indent=4)
+	pp.pprint(a)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To see the full code and clone it, check it out on github &lt;a href=&#34;https://github.com/dbolella/articlesofease&#34;&gt;here&lt;/a&gt;!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Realm</title>

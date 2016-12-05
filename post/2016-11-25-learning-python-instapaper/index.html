@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Realm</title>
+  <title>Learning Python</title>
 
   <meta name="author" content="Danny Bolella" />
   
@@ -24,9 +24,9 @@
   <link rel="stylesheet" href="https://dbolella.github.io/css/pygment_highlights.css" />
   
   
-  <meta property="og:title" content="Realm" />
+  <meta property="og:title" content="Learning Python" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="/post/2016-11-11-realm//" />
+  <meta property="og:url" content="/post/2016-11-25-learning-python-instapaper//" />
   <meta property="og:image" content="img/avatar.jpg" />
   
 </head>
@@ -94,15 +94,15 @@
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
         <div class="post-heading">
-          <h1>Realm</h1>
+          <h1>Learning Python</h1>
       
         
-      <h2 class="post-subheading">Enter into...</h2>
+      <h2 class="post-subheading">I call it articlesofease</h2>
       
       
       
       
-      <span class="post-meta">Posted on November 11, 2016</span>
+      <span class="post-meta">Posted on November 25, 2016</span>
       
         </div>
       </div>
@@ -120,100 +120,75 @@
       <article role="main" class="blog-post">
           
 
-<p>Realm is a mobile database that is sort of a replacement to SQLlite/Core Data that is known to be lightweight and even faster than it&rsquo;s competition.  Realm is free and relatively easy to include in your project (though many comment that it&rsquo;s quite difficult to remove).  One of the greatest advantages is that it flattens some of the traditional Data Access boilerplate and merges Models with Objects.</p>
+<p>My commute these days is long.  I mean 1.5 - 2 hours each way long.  Yeah, I know.</p>
 
-<p>With Realm 2.0, a brand new Platform has been released complete with an object server.  Whereas before a Realm was local to an app, it can now be synced to a server side database.  This removes the dependency of translating and sending Realm data manually to some other server/cloud based database solution.  It even handles the syncing automatically with very little code needed to setup.</p>
+<p>So since it&rsquo;s so long, I wanted to look into what content I could bring for my long journey each day.  I checked out podcasts, and that&rsquo;s cool.  Audible was fine, but I didn&rsquo;t want to pay (yeah, yeah, I&rsquo;m cheap).  And coding in the car produces some stomach churning results.  So instead, I usually end up reading blogs or articles on some of my favorite sites.  But just as I&rsquo;m able to preload podcasts, I wanted to do the same with my reading.</p>
 
-<p>Is Realm the best solution: it depends.  But especially with the new platform, it makes it worth while to consider.</p>
+<p>Now I know Pocket and Instapaper exist, but the dev in me said, why don&rsquo;t you do something about it?</p>
 
-<h2 id="resources-to-get-started">Resources to Get Started</h2>
+<h3 id="pythoning-my-way">Pythoning my way</h3>
+
+<p>Python has been in the back burner of my mind since college.  I fooled around a bit for a little analytics project I was doing in college, but not much since.  So when I decided I wanted to make a site scraper, I decided this could be my opportunity to mess with it.</p>
+
+<p>What makes my project more tickey from just hitting an RSS feed was that for certain sites (e.g. relevantmagazine.com) they did not provide the actual contents, just info about and a link to the article.  So the goal was to take a feed and use it to grab articles themselves and scrape the info I wanted.</p>
+
+<h2 id="what-i-used">What I Used</h2>
 
 <ul>
-<li><a href="realm.io">Realm</a></li>
-<li><a href="https://realm.io/news/best-practices-pain-points-mobile-networking-rest-api-failures/">Realm Platform vs RESTful APIs</a></li>
+<li><a href="https://www.python.org/">Python</a></li>
+<li><a href="https://github.com/codelucas/newspaper">Newspaper</a> by codelucas</li>
+<li><a href="https://github.com/kurtmckee/feedparser">FeedParser</a> by kurtmckee</li>
+<li><a href="https://www.crummy.com/software/BeautifulSoup/">BeautifulSoup</a></li>
 </ul>
 
-<h2 id="tech-details">Tech Details</h2>
+<h2 id="the-code">The code</h2>
 
-<h3 id="add-to-project">Add to Project</h3>
+<p>Overall, the code is pretty short.  The reason is because I found three open source packages that significantly reduced my effort and proved to be powerful (when combined).</p>
 
-<p><a href="https://realm.io/docs/realm-mobile-platform/get-started/">Get all Realm items here</a></p>
+<p>Feedparser is simple enough.  It pulls the rss feed from a URL you give it and allows you to explore it.  This is how I was able to get the URL&rsquo;s for my articles.</p>
 
-<p>In the package you downloaded, find the SDK folder appropriate for your project.  Take the framework files and add them to your project.</p>
+<p>Next was Newspaper.  This package specifically tries to be an open source Instapaper.  However, it doesn&rsquo;t work with sites with contentless rss feeds, hence my project remained valuable.  However, it was fantastic at grabbing the full HTML of the page and parsing into the data I wanted (author, title, text, and top image URL in this case).</p>
 
-<p>Another item in your project is the Xcode plugin.  This plugin adds a Realm Object option when creating a New File.</p>
+<p>The last package, BeautifulSoup was necessary because as much as Newspaper has it&rsquo;s own html parser for the body of an article, it wasn&rsquo;t always reliable.  BS proved to be more powerful and in a single line parsed the articles wonderfully.</p>
 
-<p>Lastly, there is the Realm Browser app for macOS.  This is a tool to explore the realm file created for your app.  After running your app with realm the first time, locate the default.realm file in your app&rsquo;s data and open with the Browser.</p>
+<p>So with these three packages and the use of built-in python code, I was bale to create a script that scraped all the articles and output them in JSON, ready to be consumed in an app or inserted into a database.</p>
 
-<h2 id="tutorial">Tutorial</h2>
+<pre><code>feed = feedparser.parse(str(sys.argv[1]))
+print(feed.feed.title)
+print(repr(len(feed.entries)) + &quot; articles compiled on &quot; + time.strftime(&quot;%m/%d/%Y %H:%M:%S&quot;) + &quot;\n\n&quot;)
 
-<p><a href="https://realm.io/docs/swift/latest/">Simple Tutorial</a></p>
+for entry in feed.entries:
+	article = Article(entry.link)
+	article.download()
+	article.parse()
 
-<h2 id="creating-an-object">Creating an object</h2>
+	try:
+	  html_string = ElementTree.tostring(article.clean_top_node)
+	except:
+	  html_string = &quot;Error converting html to string.&quot;
 
-<p>Realm will be different for anyone who is used to creating a database table schema and then data object models to capture it, or vice-versa in previous projects.  Since the database is local, there&rsquo;s no need to do this work.  Instead, we create the model in the code, and the table schema (as well as the table itself) is automatically created and maintained in a .realm file.</p>
+	soup = BeautifulSoup(html_string, 'html.parser')
+	a = {
+         'authors': str(', '.join(article.authors)), 
+         'title': article.title,
+         'text': soup.get_text(),
+         'top_image': article.top_image
+         }
 
-<p>To do this, you just create a new class that extends the Realm Object.  Here&rsquo;s a quick sample:</p>
+	pp = pprint.PrettyPrinter(indent=4)
+	pp.pprint(a)
+</code></pre>
 
-<p><code>class Person: Object {
-      dynamic var name = &quot;&quot;
-      dynamic var age = 0
-}</code></p>
-
-<p>Immediately we can start creating objects using our new class:</p>
-
-<p><code>let danny = Person()
-danny.name = &quot;Danny&quot;
-danny.age = 27</code></p>
-
-<p>We now have this class defined in our code and an instance of this class.  However, we still do not have this stored in a Realm table, nor do we even have one defined.  So, let&rsquo;s start by creating a Realm (which is essentially a local database):</p>
-
-<p><code>let realm = try! Realm()</code></p>
-
-<p>This code sets up a Realm instance that is synced with our default realm file (automatically default.realm).  (Note: you can specify your own realm files).  In this code, because default.realm does not exist, it automatically creates the file.</p>
-
-<p>Did you catch that?  We just made a database by initializing a Realm.  That&rsquo;s how simple it is to get going.  Now watch what it takes to create a table complete with a schema and an entry:</p>
-
-<p><code>try! realm.write {
-    realm.add(danny)
-}</code></p>
-
-<p>That&rsquo;s it.  By simply setting a write block on the realm and adding our object, Realm has automatically taken care of setting up our table.  How can we confirm?</p>
-
-<p><code>let people = realm.objects(Person.self)
-print(people.count)</code></p>
-
-<p>By calling the objects function on our realm, we request all entries that are of the type Person.  When we print the count of the results, we should expect to see 1.  If we wanted to filter for people whose age is 21 and over, we can add the filter to our query:</p>
-
-<p><code>let people = realm.objects(Person.self).filter(&quot;age &gt;= 21&quot;)</code></p>
-
-<p>Using the filter function, we can add logic to get the results we want.</p>
-
-<p>Lastly, if we want to simultaneously update an object as well as it&rsquo;s corresponding entry, we can do the following:</p>
-
-<p><code>let firstPerson = realm.objects(Person.self).first
-try! realm.write {
-    firstPerson!.age = 28
-}</code></p>
-
-<h2 id="experiment">Experiment</h2>
-
-<h3 id="can-we-create-a-common-realm-util">Can we create a common Realm Util?</h3>
-
-<p>Realm does allow for simple/plain code.  For instance, models are extremely easy to setup and queries are very standard.  Though you will quickly find blocks of code being repeated across different models.  Also, there are no built-in converters, for example, JSON to Object.  To be clear, there are, without a doubt, numerous edge cases.  However, there are enough generic functions that, I feel, we can collect into a simple util class.</p>
+<p>To see the full code and clone it, check it out on github <a href="https://github.com/dbolella/articlesofease">here</a>!</p>
 
       </article>
 
       <ul class="pager blog-pager">
         
         <li class="previous">
-          <a href="https://dbolella.github.io/post/2016-10-28-multer-and-swifthttp/" data-toggle="tooltip" data-placement="top" title="Multer &amp; SwiftHTTP">&larr; Previous Post</a>
+          <a href="https://dbolella.github.io/post/2016-11-11-realm/" data-toggle="tooltip" data-placement="top" title="Realm">&larr; Previous Post</a>
         </li>
         
-        
-        <li class="next">
-          <a href="https://dbolella.github.io/post/2016-11-25-learning-python-instapaper/" data-toggle="tooltip" data-placement="top" title="Learning Python">Next Post &rarr;</a>
-        </li>
         
       </ul>
 
