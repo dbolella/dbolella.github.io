@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Learning Python</title>
+  <title>The Agile Life Pt. 2</title>
 
   <meta name="author" content="Danny Bolella" />
   
@@ -24,9 +24,9 @@
   <link rel="stylesheet" href="https://dbolella.github.io/css/pygment_highlights.css" />
   
   
-  <meta property="og:title" content="Learning Python" />
+  <meta property="og:title" content="The Agile Life Pt. 2" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="/post/2016-11-25-learning-python-instapaper//" />
+  <meta property="og:url" content="/post/2016-12-23-agile2//" />
   <meta property="og:image" content="img/avatar.jpg" />
   
 </head>
@@ -94,15 +94,15 @@
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
         <div class="post-heading">
-          <h1>Learning Python</h1>
+          <h1>The Agile Life Pt. 2</h1>
       
         
-      <h2 class="post-subheading">I call it articlesofease</h2>
+      <h2 class="post-subheading">So You Wanna Be A Master?</h2>
       
       
       
       
-      <span class="post-meta">Posted on November 25, 2016</span>
+      <span class="post-meta">Posted on December 23, 2016</span>
       
         </div>
       </div>
@@ -118,81 +118,16 @@
   <div class="row">
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
       <article role="main" class="blog-post">
-          
-
-<p>My commute these days is long.  I mean 1.5 - 2 hours each way long.  Yeah, I know.</p>
-
-<p>So since it&rsquo;s so long, I wanted to look into what content I could bring for my long journey each day.  I checked out podcasts, and that&rsquo;s cool.  Audible was fine, but I didn&rsquo;t want to pay (yeah, yeah, I&rsquo;m cheap).  And coding in the car produces some stomach churning results.  So instead, I usually end up reading blogs or articles on some of my favorite sites.  But just as I&rsquo;m able to preload podcasts, I wanted to do the same with my reading.</p>
-
-<p>Now I know Pocket and Instapaper exist, but the dev in me said, why don&rsquo;t you do something about it?</p>
-
-<h3 id="pythoning-my-way">Pythoning my way</h3>
-
-<p>Python has been in the back burner of my mind since college.  I fooled around a bit for a little analytics project I was doing in college, but not much since.  So when I decided I wanted to make a site scraper, I decided this could be my opportunity to mess with it.</p>
-
-<p>What makes my project more tickey from just hitting an RSS feed was that for certain sites (e.g. relevantmagazine.com) they did not provide the actual contents, just info about and a link to the article.  So the goal was to take a feed and use it to grab articles themselves and scrape the info I wanted.</p>
-
-<h2 id="what-i-used">What I Used</h2>
-
-<ul>
-<li><a href="https://www.python.org/">Python</a></li>
-<li><a href="https://github.com/codelucas/newspaper">Newspaper</a> by codelucas</li>
-<li><a href="https://github.com/kurtmckee/feedparser">FeedParser</a> by kurtmckee</li>
-<li><a href="https://www.crummy.com/software/BeautifulSoup/">BeautifulSoup</a></li>
-</ul>
-
-<h2 id="the-code">The code</h2>
-
-<p>Overall, the code is pretty short.  The reason is because I found three open source packages that significantly reduced my effort and proved to be powerful (when combined).</p>
-
-<p>Feedparser is simple enough.  It pulls the rss feed from a URL you give it and allows you to explore it.  This is how I was able to get the URL&rsquo;s for my articles.</p>
-
-<p>Next was Newspaper.  This package specifically tries to be an open source Instapaper.  However, it doesn&rsquo;t work with sites with contentless rss feeds, hence my project remained valuable.  However, it was fantastic at grabbing the full HTML of the page and parsing into the data I wanted (author, title, text, and top image URL in this case).</p>
-
-<p>The last package, BeautifulSoup was necessary because as much as Newspaper has it&rsquo;s own html parser for the body of an article, it wasn&rsquo;t always reliable.  BS proved to be more powerful and in a single line parsed the articles wonderfully.</p>
-
-<p>So with these three packages and the use of built-in python code, I was bale to create a script that scraped all the articles and output them in JSON, ready to be consumed in an app or inserted into a database.</p>
-
-<pre><code>feed = feedparser.parse(str(sys.argv[1]))
-print(feed.feed.title)
-print(repr(len(feed.entries)) + &quot; articles compiled on &quot; + time.strftime(&quot;%m/%d/%Y %H:%M:%S&quot;) + &quot;\n\n&quot;)
-
-for entry in feed.entries:
-	article = Article(entry.link)
-	article.download()
-	article.parse()
-
-	try:
-	  html_string = ElementTree.tostring(article.clean_top_node)
-	except:
-	  html_string = &quot;Error converting html to string.&quot;
-
-	soup = BeautifulSoup(html_string, 'html.parser')
-	a = {
-         'authors': str(', '.join(article.authors)), 
-         'title': article.title,
-         'text': soup.get_text(),
-         'top_image': article.top_image
-         }
-
-	pp = pprint.PrettyPrinter(indent=4)
-	pp.pprint(a)
-</code></pre>
-
-<p>To see the full code and clone it, check it out on github <a href="https://github.com/dbolella/articlesofease">here</a>!</p>
+          <p>Where I left off in my previous post was I had accepted an opportunity to become a Scrum MAster for a second agile team being spun up.</p>
 
       </article>
 
       <ul class="pager blog-pager">
         
         <li class="previous">
-          <a href="https://dbolella.github.io/post/2016-11-11-realm/" data-toggle="tooltip" data-placement="top" title="Realm">&larr; Previous Post</a>
+          <a href="https://dbolella.github.io/post/2016-12-09-agile/" data-toggle="tooltip" data-placement="top" title="The Agile Life Pt. 1">&larr; Previous Post</a>
         </li>
         
-        
-        <li class="next">
-          <a href="https://dbolella.github.io/post/2016-12-09-agile/" data-toggle="tooltip" data-placement="top" title="The Agile Life Pt. 1">Next Post &rarr;</a>
-        </li>
         
       </ul>
 

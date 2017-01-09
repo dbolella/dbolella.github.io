@@ -8,8 +8,70 @@
     <language>en-us</language>
     <managingEditor>dbolella@gmail.com (Danny Bolella)</managingEditor>
     <webMaster>dbolella@gmail.com (Danny Bolella)</webMaster>
-    <lastBuildDate>Fri, 25 Nov 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 23 Dec 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://dbolella.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>The Agile Life Pt. 2</title>
+      <link>https://dbolella.github.io/post/2016-12-23-agile2/</link>
+      <pubDate>Fri, 23 Dec 2016 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>https://dbolella.github.io/post/2016-12-23-agile2/</guid>
+      <description>&lt;p&gt;Where I left off in my previous post was I had accepted an opportunity to become a Scrum MAster for a second agile team being spun up.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The Agile Life Pt. 1</title>
+      <link>https://dbolella.github.io/post/2016-12-09-agile/</link>
+      <pubDate>Fri, 09 Dec 2016 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>https://dbolella.github.io/post/2016-12-09-agile/</guid>
+      <description>
+
+&lt;p&gt;When I first started at TDA, one of the things I learned was that the company was interested in making a transfomation to Agile.  Flashbacks immeadiatly went through my head.  Learnign about agile in my software engineering course, practicing Extreme Programming (XP) during one of my internships, and hearing all about wanting to do &amp;ldquo;agile&amp;rdquo; at JPMC (notice the quotation marks).  I&amp;rsquo;ve seen attempts at agile, good ones and bad ones.  But I was excited to see where this would go, mainly because the team really seemed to be open to attempting it.&lt;/p&gt;
+
+&lt;p&gt;Two years later, I can definitely say it has been quite a ride.&lt;/p&gt;
+
+&lt;h3 id=&#34;baby-steps&#34;&gt;Baby steps&lt;/h3&gt;
+
+&lt;p&gt;At first, it was attempting to setup Continuous Integration with Jenkins and reaching some success.  Then it was pair programming WHILE learning iOS.  We began stand-ups.  We wrote what we would now identify as integration tests.&lt;/p&gt;
+
+&lt;p&gt;Early on, though, we identified some key areas of growth.  Our SCM process was not really the best.  We also worked without clear backlogs, just checklists.  And pairing had it&amp;rsquo;s faults.  There was a fine line between synchronized pairing and lop sided development.&lt;/p&gt;
+
+&lt;h3 id=&#34;pivotal&#34;&gt;Pivotal&lt;/h3&gt;
+
+&lt;p&gt;To help us learn, our team began an engagement with Pivotal Labs to help us not only agile concepts but actively practice them as disciplines.  At first I wasn&amp;rsquo;t part of the engagement, but scheduling favored me to step in.&lt;/p&gt;
+
+&lt;p&gt;The four months spent at Pivotal was absolutely some of the most interesting and  challenging of my post-college career.  The biggest difference was the open, free-spirited, experimental nature by which they approach work.  This was culture shock for me.  While, yes, that would be my approach for college and personal projects, I had to reverse so many corporate disciplines.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;ll get into the actual disciplines later, but my biggest take-away was that there is a balance to be struck when doing an agile transformation.  For instance, going a thousand miles per hour in a code base that pulls in millions of dollars on the regular is not the best course of action.  Expecting final decisions on designs or features from non-agile outside forces is foolish.  While Pivotal had plenty to comment about our code and process, there were plenty of smells that I predicted were actually incompatible with our situation that turned out to be true.&lt;/p&gt;
+
+&lt;p&gt;While the cost was months of bug fixing, ultimately, the number of lessons learned were still countless.  It did give us a glimpse of the culture we DID want to adopt, but with the warning that it would take time, patience, and discipline.&lt;/p&gt;
+
+&lt;h3 id=&#34;the-return&#34;&gt;The Return&lt;/h3&gt;
+
+&lt;p&gt;When we came back, we went with the best intentions of keeping up what we learned.  What we realized over time, though, was that doing the amount of bug fixes that we had to was discouraging.  Eventually, it caused us to slack in some of our agile practices.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, we pushed ourselves not to forget or let go completely.  We would often hold each other accountable for slipping here or there and eventually settled into a system.  That&amp;rsquo;s not to say it was perfect or completely agile, but we were proud that we had at least radically changed our culture as a team.&lt;/p&gt;
+
+&lt;p&gt;A major point of confliction with our efforts was rather everyone outside of the team.  We still operated within a waterfall architecture which caused conflicts with business vision, testing schedules, UX design changes, etc.  At one point, we had three different releases in flight because of the amount of changes that were being done between them.&lt;/p&gt;
+
+&lt;h3 id=&#34;whole-teams&#34;&gt;Whole Teams&lt;/h3&gt;
+
+&lt;p&gt;Eventually, a &amp;ldquo;whole team pilot&amp;rdquo; was begun.  I remained on the mobile development team while the pilot kicked off, but everyone had their eyes on what was going on.  The team would follow Scrum for the most part, which meant is was one of the first cross-functional teams.  It was an exciting time for the company because it was yet another drastic move towards agile, this time in-house.&lt;/p&gt;
+
+&lt;p&gt;We had to give the team a lot of grace.  It definitely seemed like it was a culture shock for everyone on the team.  What&amp;rsquo;s worse was they had to switch coaches just after a month or so because the first could not give enough attention the the teams needs.&lt;/p&gt;
+
+&lt;p&gt;As I observed, I made a lot of comparisons between what I had experienced back in college and at Pivotal.  I felt that some things were going well, but that certain key elements were missing.  My perspective as a developer gave me insight to how the team was still disfunctional despite being constructed as cross-functional.  Awareness of each others roles seemed low to me and therefore holding the team accountable to what they could do made it difficult.  This is no easy thing because agile calls for trust.  But, at the same time, without anyone pushing, it&amp;rsquo;s just as easy for people to take on less and less.  This wasn&amp;rsquo;t intentional or malicious by any means, that I knew and was comforted by.&lt;/p&gt;
+
+&lt;h3 id=&#34;so-you-wanna-be-a-master&#34;&gt;So you wanna be a Master?&lt;/h3&gt;
+
+&lt;p&gt;Eventually, a second agile team was being spun up.  I had been sharing my observations with my Director during our commute and that led to an offer to become Scrum Master of the new team.  A career goal was definitely to take on a leadership role, and this opportunity seemed hard to pass up.  Especially since a SM&amp;rsquo;s primary function is to be a servant leader, an approach I value tremendously.&lt;/p&gt;
+
+&lt;p&gt;This is where I&amp;rsquo;ll end this post.  Stayed tune for the follow-up about my adventures being a Developer in a Scrum MAster role and the lessons learned and achievements we made as a team!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Learning Python</title>
