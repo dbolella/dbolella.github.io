@@ -17,7 +17,25 @@
       <pubDate>Fri, 23 Dec 2016 00:00:00 +0000</pubDate>
       <author>dbolella@gmail.com (Danny Bolella)</author>
       <guid>https://dbolella.github.io/post/2016-12-23-agile2/</guid>
-      <description>&lt;p&gt;Where I left off in my previous post was I had accepted an opportunity to become a Scrum MAster for a second agile team being spun up.&lt;/p&gt;
+      <description>
+
+&lt;p&gt;Where I left off in my previous post was I had accepted an opportunity to become a Scrum MAster for a second agile team being spun up.  This was a big shift for me because it would mean little to no coding, at least initially.  Fortunately, that has changed since as I&amp;rsquo;m acting as a part-time iOS SME now as well as Scrum Master.  But I don&amp;rsquo;t want to get ahead of myself.&lt;/p&gt;
+
+&lt;h3 id=&#34;beginnings&#34;&gt;Beginnings&lt;/h3&gt;
+
+&lt;p&gt;Starting the team took a lot of work and patience.  The biggest challenge was building up trust in the individuals that Agile could bes trusted but that, at the versy least, we could trust one another within the team.  We spent a lot of time talking about cadence, norms, and goals before finally starting.  Laying down those foundations, though, brought the team together.  We were able to achieve a state where we were now embarking on something unfamiliar but that we weren&amp;rsquo;t alone with our uncertainty, which led to greater patience with each other.&lt;/p&gt;
+
+&lt;h3 id=&#34;growth-from-challenges&#34;&gt;Growth from Challenges&lt;/h3&gt;
+
+&lt;p&gt;The beginning was a bit tough.  We immeadiatly had to do 3 small scale releases to meet a new federal regulation across 3 apps.  Also, we were trying to close out features that were started in waterfall.  We were able to get releases out, but the legacy work was quickly identified as our first major obstacle.&lt;/p&gt;
+
+&lt;p&gt;Another challenge were meetings.  We were given a meeting schedule that was just so draining.  Over 16 hours of meetings within a 60 hour sprint.  This was just not going to fly.  Eventually, we decided to refine our meetings.  We adopted best practices such as time boxing, prepping, and establishing focus/agendas for meetings.  Eventually, we brought it down to just 9 hours, a vast improvement.&lt;/p&gt;
+
+&lt;p&gt;The last great challange was/is the rest of the company.  As the team began to mature, we began to recognize speed bumps/blocks through dependencies.  For an example, our regression testing cycle could easily add 6 weeks to any project before release.  But that would mean at least 1.5 month old code per release.  The solution took on many faces.  We negotiated that regression should focus on one project at a time, reducing cycles to 3 weeks.  Then we identified that automated test scripts that were already written and prepared were hitting a simple bug, which led to none of the tests being run.  This had to change.  And lastly, we pointed out areas of the code per release that were clean.  By clean, I mean it was untouched or already tested through a shared app.  By guiding the regression team, we were able to inspire confidence in our app and reduce the cycle even further.&lt;/p&gt;
+
+&lt;h3 id=&#34;today&#34;&gt;Today&lt;/h3&gt;
+
+&lt;p&gt;Do we have areas to grow in, absolutely.  But I can confidently say that our team is, for the most part, self-organizing, effecient, and cross-functional (within reason).  It&amp;rsquo;s exciting to see the team operate today.  For me, the biggest indication has been that I have felt free to address other responsibilities while the team continues to move forward and deliver.  This month, we&amp;rsquo;re looking to conduct 5 releases in 5 weeks and without a release engineer, I have been busy coordinating all these releases.  On top of this, I&amp;rsquo;ve been able to code again, picking up iOS stories in the backlog and completing them on my own (with reviews when done).  To me, this is a strong indication of the teams strength and maturity, and a sign that we can take on bigger challenges moving forward.&lt;/p&gt;
 </description>
     </item>
     
