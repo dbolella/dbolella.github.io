@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Multer &amp; SwiftHTTP</title>
+  <title>Training Days</title>
 
   <meta name="author" content="Danny Bolella" />
   
@@ -24,9 +24,9 @@
   <link rel="stylesheet" href="https://dbolella.github.io/css/pygment_highlights.css" />
   
   
-  <meta property="og:title" content="Multer &amp; SwiftHTTP" />
+  <meta property="og:title" content="Training Days" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="/post/2016-10-28-multer-and-swifthttp//" />
+  <meta property="og:url" content="/post/2017-03-03-training-days//" />
   <meta property="og:image" content="img/avatar.jpg" />
   
 </head>
@@ -86,23 +86,47 @@
 
 
 
+  <div id="header-big-imgs" data-num-img=1 data-img-src-1="/img/Agile.jpg"></div>
 
-<header class="header-section ">
+
+<header class="header-section has-img">
+
+<div class="big-img intro-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>Training Days</h1>
+      
+        
+      <h2 class="post-subheading">Certifiably Mind-blown</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on March 3, 2017</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class='img-desc'></span>
+</div>
 
 <div class="intro-header no-img">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
         <div class="post-heading">
-          <h1>Multer &amp; SwiftHTTP</h1>
+          <h1>Training Days</h1>
       
         
-      <h2 class="post-subheading">Uploading Swiftly to Node.JS</h2>
+      <h2 class="post-subheading">Certifiably Mind-blown</h2>
       
       
       
       
-      <span class="post-meta">Posted on October 28, 2016</span>
+      <span class="post-meta">Posted on March 3, 2017</span>
       
         </div>
       </div>
@@ -120,72 +144,46 @@
       <article role="main" class="blog-post">
           
 
-<p>For a small demo app I was building, I needed to upload a file from my app to my server to be saved locally.  Straight forward, especially since this was just for a demo.  What was frustrating though is I realized that trying to do this quickly with built-in code on both ends felt like it took way more than I wanted to get into (granted, never really did this before with these platforms so there&rsquo;s that, too, I suppose).</p>
-
-<p>So a few searches later, I came across two tools that simplified it to just a few lines of code on either side.</p>
-
-<p>On the Swift side, SwiftHTTP simplified the POST call to a single function call that uses it&rsquo;s own Upload class and a callback.  That&rsquo;s all I wanted to do.  Done.</p>
-
-<p>On the Node.js side, I was already using express to get a server running.  What&rsquo;s cool is express offers Multer as a solution. Multer says it&rsquo;s really for forms that could use uploading, but it&rsquo;s file uploading setup is simple enough to single-out.  How it works is that for the Request object, they extend it to not only have a body object, but also a file object.  So all you need to do is specify that you&rsquo;re looking for a file in your post parameters and bam, you have your file.</p>
-
-<p>Easy enough!  In 20 lines of code across two platforms I had file uploading working.</p>
-
-<h2 id="resources-to-get-started">Resources to Get Started</h2>
+<p>The past week and a half has been quite the agile adventure.  Opportunity after opportunity arose for me to learn and grow more than ever on my Scrum Master journey.  The three key events were:</p>
 
 <ul>
-<li><a href="swift.org">Swift</a></li>
-<li><a href="https://github.com/daltoniam/SwiftHTTP">SwiftHTTP</a></li>
-<li><a href="https://github.com/expressjs/multer">Multer</a></li>
+<li>Business Agility 2017</li>
+<li>Certified Scrum Master Course taught by Dr. Jeff Sutherland (co-founder of Scrum and the Agile Manifesto )</li>
+<li>Pragmatic Management Lecture by Andy Hunt (co-founder of the Agile Manifesto and author of the Pragmatic Programmer)</li>
 </ul>
 
-<h2 id="tech-details">Tech Details</h2>
+<p>To say that my mind has been feeling overwhelmed lately is quite the understatement.  However, it allowed me to cover a lot of ground in my studies on agile.  Between reviewing the manifesto, going deeper on why scrum works, learning best practices, and listening to incredibly unbelievable stories and case studies from around the world, I feel completely empowered moving forward and have tons of ideas to bring to the table for our transformation.  Let me walk you through (on a high level) what this week has been for me.</p>
 
-<h3 id="my-implementation">My implementation</h3>
+<h3 id="self-reflection">Self-reflection</h3>
 
-<p>Fastest way is to follow the install instructions for both.  From there, here&rsquo;s the code I used:</p>
+<p>The deep stuff is where I&rsquo;ll begin.  Making connections between what I&rsquo;m learning/listening to and myself is someting that happens naturally for me.  As I sat through all the lectures, I ended up doing a lot of reflection.</p>
 
-<p>SwiftHTTP</p>
+<p>I&rsquo;ll be the first to admit that, for as much as I&rsquo;ve tried to learn and practice agility and scrum, the one thing that has been lacking is feeling truly ahead.  I&rsquo;ve always had confidence that I could figure things out as I went along, but rarely have I felt like I have clearly visualized the essence of how we, as scrum teams, would actually reach our goals.</p>
 
-<pre><code>func upload() {
-        do {
-            let opt = try HTTP.POST(&quot;http://localhost:3000/photo&quot;, parameters: [&quot;photo&quot;: Upload(fileUrl: photoFileURL),&quot;title&quot;: titleString])
-            opt.start { response in
-                self.performSegue(withIdentifier: &quot;finishRecording&quot;, sender: nil)
-            }
-        } catch let error {
-            print(&quot;got an error creating the request: \(error)&quot;)
-        }
-    }
-</code></pre>
+<p>To be honest, I feel like I&rsquo;ve allowed myself to be fooled a bit.  I honestly took agile to mean that not having the answers about things is ok and that we could just go with the flow.  But I&rsquo;ve learned that&rsquo;s false.  Why, then, would there be an agile manifesto?  Why would Scrum outline an entire framework?  Why would so many corporations have to pull resets on their agile transformations?</p>
 
-<p>Multer</p>
+<h3 id="the-key">The Key</h3>
 
-<pre><code>app.post('/photo', upload.single('photo'), function (req, res, next) {
-  var tmp_path = req.file.path;
-  var target_path = 'uploads/' + req.file.originalname;
-  var src = fs.createReadStream(tmp_path);
-  var dest = fs.createWriteStream(target_path);
-  src.pipe(dest);
-  src.on('end', function() { 
-    console.log(&quot;UPLOAD COMPLETE&quot;)
-    res.send(&quot;complete&quot;); 
-  });
-  src.on('error', function(err) { res.send(&quot;error&quot;); });
-})
-</code></pre>
+<p>To ground this, a repeated quote that comes from one of my favorite Presidents (disclaimer: history minor) was &ldquo;Plans are usless, but planning is everything.&rdquo;.  I&rsquo;m not proposing we lay out a hard defined roadmap for our transformation, that would be a waterfall approach to adopting agile.  But what I am saying is that we can be better prepared, trained, educated, and enlightened so that as we do move forward, everyone shares the same focus.</p>
+
+<p>When Eisenhower said this, he put it in the context of winning a battle.  Everyone from the soldiers to the officers have a common knowledge of their capabilities, their training, of the enemy, and of their goal, which is ultimately to win and/or advance.  And probably the most important part is that they know they can rely on each other and trust one another to meet their commitments and areas of cooperation.  When it comes to our business, we need to have the same thing.  We need to be on a &lsquo;similar&rsquo; level of education and training.  We need transparancy and trust.  We need a shared vision so we can all meet at the same place.</p>
+
+<h3 id="a-re-new-ed-hope">A (Re)new(ed) Hope</h3>
+
+<p>There&rsquo;s so much I can write here, and I plan to write a number of posts about all I&rsquo;ve learned (or as much as I can get to).  But I&rsquo;ll close this one with this:  I have a renewed hope.  I&rsquo;m proud of what the team has accomplished so far and where our sub organization has accomplished.  But some days I&rsquo;ve felt like we we&rsquo;re beginning to flat line in terms of growth and becomming more agile.  Like we were destined to reach almost agile, never actually obtaining steady growth.</p>
+
+<p>Now I see that it&rsquo;s not only possible, but that people have gone beyond.  That agile teams out there have gone beyond and moved onto models and techniques that honestly sound like business sci-fi.  And what&rsquo;s more is I feel like I see how a team can get there.  It&rsquo;s actually extemely straight-forward.  But just like it says in the scrum guide: It&rsquo;s &ldquo;lightweight&rdquo;, &ldquo;simple to understand&rdquo;, but &ldquo;difficult to understand&rdquo;.</p>
+
+<p>And you know what?  That&rsquo;s ok.  I say &ldquo;game on&rdquo;.</p>
 
       </article>
 
       <ul class="pager blog-pager">
         
         <li class="previous">
-          <a href="https://dbolella.github.io/post/2016-10-14-kitura/" data-toggle="tooltip" data-placement="top" title="Kitura">&larr; Previous Post</a>
+          <a href="https://dbolella.github.io/post/2016-12-23-agile2/" data-toggle="tooltip" data-placement="top" title="The Agile Life Pt. 2">&larr; Previous Post</a>
         </li>
         
-        
-        <li class="next">
-          <a href="https://dbolella.github.io/post/2016-11-11-realm/" data-toggle="tooltip" data-placement="top" title="Realm">Next Post &rarr;</a>
-        </li>
         
       </ul>
 

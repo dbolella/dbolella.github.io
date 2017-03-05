@@ -8,8 +8,50 @@
     <language>en-us</language>
     <managingEditor>dbolella@gmail.com (Danny Bolella)</managingEditor>
     <webMaster>dbolella@gmail.com (Danny Bolella)</webMaster>
-    <lastBuildDate>Fri, 23 Dec 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 03 Mar 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://dbolella.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Training Days</title>
+      <link>https://dbolella.github.io/post/2017-03-03-training-days/</link>
+      <pubDate>Fri, 03 Mar 2017 00:00:00 +0000</pubDate>
+      <author>dbolella@gmail.com (Danny Bolella)</author>
+      <guid>https://dbolella.github.io/post/2017-03-03-training-days/</guid>
+      <description>
+
+&lt;p&gt;The past week and a half has been quite the agile adventure.  Opportunity after opportunity arose for me to learn and grow more than ever on my Scrum Master journey.  The three key events were:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Business Agility 2017&lt;/li&gt;
+&lt;li&gt;Certified Scrum Master Course taught by Dr. Jeff Sutherland (co-founder of Scrum and the Agile Manifesto )&lt;/li&gt;
+&lt;li&gt;Pragmatic Management Lecture by Andy Hunt (co-founder of the Agile Manifesto and author of the Pragmatic Programmer)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To say that my mind has been feeling overwhelmed lately is quite the understatement.  However, it allowed me to cover a lot of ground in my studies on agile.  Between reviewing the manifesto, going deeper on why scrum works, learning best practices, and listening to incredibly unbelievable stories and case studies from around the world, I feel completely empowered moving forward and have tons of ideas to bring to the table for our transformation.  Let me walk you through (on a high level) what this week has been for me.&lt;/p&gt;
+
+&lt;h3 id=&#34;self-reflection&#34;&gt;Self-reflection&lt;/h3&gt;
+
+&lt;p&gt;The deep stuff is where I&amp;rsquo;ll begin.  Making connections between what I&amp;rsquo;m learning/listening to and myself is someting that happens naturally for me.  As I sat through all the lectures, I ended up doing a lot of reflection.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;ll be the first to admit that, for as much as I&amp;rsquo;ve tried to learn and practice agility and scrum, the one thing that has been lacking is feeling truly ahead.  I&amp;rsquo;ve always had confidence that I could figure things out as I went along, but rarely have I felt like I have clearly visualized the essence of how we, as scrum teams, would actually reach our goals.&lt;/p&gt;
+
+&lt;p&gt;To be honest, I feel like I&amp;rsquo;ve allowed myself to be fooled a bit.  I honestly took agile to mean that not having the answers about things is ok and that we could just go with the flow.  But I&amp;rsquo;ve learned that&amp;rsquo;s false.  Why, then, would there be an agile manifesto?  Why would Scrum outline an entire framework?  Why would so many corporations have to pull resets on their agile transformations?&lt;/p&gt;
+
+&lt;h3 id=&#34;the-key&#34;&gt;The Key&lt;/h3&gt;
+
+&lt;p&gt;To ground this, a repeated quote that comes from one of my favorite Presidents (disclaimer: history minor) was &amp;ldquo;Plans are usless, but planning is everything.&amp;rdquo;.  I&amp;rsquo;m not proposing we lay out a hard defined roadmap for our transformation, that would be a waterfall approach to adopting agile.  But what I am saying is that we can be better prepared, trained, educated, and enlightened so that as we do move forward, everyone shares the same focus.&lt;/p&gt;
+
+&lt;p&gt;When Eisenhower said this, he put it in the context of winning a battle.  Everyone from the soldiers to the officers have a common knowledge of their capabilities, their training, of the enemy, and of their goal, which is ultimately to win and/or advance.  And probably the most important part is that they know they can rely on each other and trust one another to meet their commitments and areas of cooperation.  When it comes to our business, we need to have the same thing.  We need to be on a &amp;lsquo;similar&amp;rsquo; level of education and training.  We need transparancy and trust.  We need a shared vision so we can all meet at the same place.&lt;/p&gt;
+
+&lt;h3 id=&#34;a-re-new-ed-hope&#34;&gt;A (Re)new(ed) Hope&lt;/h3&gt;
+
+&lt;p&gt;There&amp;rsquo;s so much I can write here, and I plan to write a number of posts about all I&amp;rsquo;ve learned (or as much as I can get to).  But I&amp;rsquo;ll close this one with this:  I have a renewed hope.  I&amp;rsquo;m proud of what the team has accomplished so far and where our sub organization has accomplished.  But some days I&amp;rsquo;ve felt like we we&amp;rsquo;re beginning to flat line in terms of growth and becomming more agile.  Like we were destined to reach almost agile, never actually obtaining steady growth.&lt;/p&gt;
+
+&lt;p&gt;Now I see that it&amp;rsquo;s not only possible, but that people have gone beyond.  That agile teams out there have gone beyond and moved onto models and techniques that honestly sound like business sci-fi.  And what&amp;rsquo;s more is I feel like I see how a team can get there.  It&amp;rsquo;s actually extemely straight-forward.  But just like it says in the scrum guide: It&amp;rsquo;s &amp;ldquo;lightweight&amp;rdquo;, &amp;ldquo;simple to understand&amp;rdquo;, but &amp;ldquo;difficult to understand&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;And you know what?  That&amp;rsquo;s ok.  I say &amp;ldquo;game on&amp;rdquo;.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>The Agile Life Pt. 2</title>
@@ -27,15 +69,17 @@
 
 &lt;h3 id=&#34;growth-from-challenges&#34;&gt;Growth from Challenges&lt;/h3&gt;
 
-&lt;p&gt;The beginning was a bit tough.  We immeadiatly had to do 3 small scale releases to meet a new federal regulation across 3 apps.  Also, we were trying to close out features that were started in waterfall.  We were able to get releases out, but the legacy work was quickly identified as our first major obstacle.&lt;/p&gt;
+&lt;p&gt;We immeadiatly had to do 3 small scale releases to meet a new federal regulation across 3 apps.  On top of this, we were trying to close out features that were started in waterfall.  We were able to get releases out, but the legacy work was quickly identified as our first major obstacle.&lt;/p&gt;
 
-&lt;p&gt;Another challenge were meetings.  We were given a meeting schedule that was just so draining.  Over 16 hours of meetings within a 60 hour sprint.  This was just not going to fly.  Eventually, we decided to refine our meetings.  We adopted best practices such as time boxing, prepping, and establishing focus/agendas for meetings.  Eventually, we brought it down to just 9 hours, a vast improvement.&lt;/p&gt;
+&lt;p&gt;Another challenge were all the meetings.  We were given a meeting schedule that was just so draining.  Over 16 hours of meetings within a 60 hour sprint.  This was just not going to fly.  Eventually, we decided to refine our meetings.  We adopted best practices such as time boxing, prepping, and establishing focus/agendas for meetings.  Eventually, we brought it down to just 9 hours, a vast improvement.&lt;/p&gt;
 
-&lt;p&gt;The last great challange was/is the rest of the company.  As the team began to mature, we began to recognize speed bumps/blocks through dependencies.  For an example, our regression testing cycle could easily add 6 weeks to any project before release.  But that would mean at least 1.5 month old code per release.  The solution took on many faces.  We negotiated that regression should focus on one project at a time, reducing cycles to 3 weeks.  Then we identified that automated test scripts that were already written and prepared were hitting a simple bug, which led to none of the tests being run.  This had to change.  And lastly, we pointed out areas of the code per release that were clean.  By clean, I mean it was untouched or already tested through a shared app.  By guiding the regression team, we were able to inspire confidence in our app and reduce the cycle even further.&lt;/p&gt;
+&lt;p&gt;The last great challange was/is the rest of the company.  As the team began to mature, we began to recognize speed bumps/blocks through dependencies.  For an example, our regression testing cycle could easily add 6 weeks to any project before release.  But that would mean at least 1.5 month old code per release.  The solution took on many faces.  The regression team approached us with a plan that they could focus on one project at a time, reducing cycles to 3 weeks.  Then we identified that automated test scripts that were already written and prepared were hitting a simple bug, which led to none of the tests being run.  Identifying the problem allowed us to agree that the value would be tremendous if we could have them up and running, putting a new spotlight on the project.  And lastly, as a team we pointed out areas of the code per release that were clean.  By clean I mean it was untouched or already tested through a shared app.  By guiding the regression team, we were able to inspire confidence in our app&amp;rsquo;s code quality/stability and reduce the cycle even further.&lt;/p&gt;
 
 &lt;h3 id=&#34;today&#34;&gt;Today&lt;/h3&gt;
 
-&lt;p&gt;Do we have areas to grow in, absolutely.  But I can confidently say that our team is, for the most part, self-organizing, effecient, and cross-functional (within reason).  It&amp;rsquo;s exciting to see the team operate today.  For me, the biggest indication has been that I have felt free to address other responsibilities while the team continues to move forward and deliver.  This month, we&amp;rsquo;re looking to conduct 5 releases in 5 weeks and without a release engineer, I have been busy coordinating all these releases.  On top of this, I&amp;rsquo;ve been able to code again, picking up iOS stories in the backlog and completing them on my own (with reviews when done).  To me, this is a strong indication of the teams strength and maturity, and a sign that we can take on bigger challenges moving forward.&lt;/p&gt;
+&lt;p&gt;Do we have areas to grow in, absolutely.  But I can confidently say that our team is, for the most part, self-organizing, effecient, and cross-functional (within reason).  It&amp;rsquo;s exciting to see the team operate today.  For me, the biggest indication has been that I have felt free to address other responsibilities while the team continues to move forward and deliver.  This month, we&amp;rsquo;re looking to conduct 5 releases in 5 weeks and, without a release engineer, I have been busy coordinating all these releases.  To me, this is a strong indication of the teams strength and maturity, and a sign that we can take on bigger challenges moving forward.&lt;/p&gt;
+
+&lt;p&gt;But this is just the beginning.  Where this journey will take us is uncertain, but the initial results build up hope that we may actually achieve agility.  There is a lot of hard work ahead, but the results will be worth it.&lt;/p&gt;
 </description>
     </item>
     
@@ -73,7 +117,7 @@
 
 &lt;p&gt;Fortunately, we pushed ourselves not to forget or let go completely.  We would often hold each other accountable for slipping here or there and eventually settled into a system.  That&amp;rsquo;s not to say it was perfect or completely agile, but we were proud that we had at least radically changed our culture as a team.&lt;/p&gt;
 
-&lt;p&gt;A major point of confliction with our efforts was rather everyone outside of the team.  We still operated within a waterfall architecture which caused conflicts with business vision, testing schedules, UX design changes, etc.  At one point, we had three different releases in flight because of the amount of changes that were being done between them.&lt;/p&gt;
+&lt;p&gt;A major point of conflict with our efforts were everyone outside of the team.  We still operated within a waterfall architecture which caused conflicts with business vision, testing schedules, UX design changes, etc.  At one point, we had three different releases in flight because of the amount of changes that were being done between them.&lt;/p&gt;
 
 &lt;h3 id=&#34;whole-teams&#34;&gt;Whole Teams&lt;/h3&gt;
 
