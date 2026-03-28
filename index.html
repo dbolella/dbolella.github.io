@@ -1,399 +1,869 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Captain SwiftUI — iOS Architecture & Liquid Glass Consulting</title>
+  <meta name="description" content="Expert 1-on-1 iOS architecture consulting for the Liquid Glass transition. Get ready before Xcode 27 breaks your app." />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────────────── */
+    :root {
+      --color-ocean-deep:   #040d1a;
+      --color-ocean-mid:    #071428;
+      --color-ocean-surface:#0a1f3d;
+      --color-cyan:         #00e5ff;
+      --color-cyan-dim:     rgba(0, 229, 255, 0.15);
+      --color-purple:       #a855f7;
+      --color-purple-dim:   rgba(168, 85, 247, 0.12);
+      --color-glass-light:  rgba(255, 255, 255, 0.06);
+      --color-glass-border: rgba(255, 255, 255, 0.12);
+      --color-text:         #e8edf4;
+      --color-text-muted:   rgba(232, 237, 244, 0.65);
+      --radius-outer:       24px;
+      --radius-inner:       16px;
+      --radius-sm:          10px;
+      --blur-glass:         blur(20px) saturate(180%);
+      --blur-card:          blur(14px) saturate(160%);
+      --font-system:        -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                            "Segoe UI", Roboto, sans-serif;
+      --transition:         0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-  <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    /* ─── Reset & Base ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <title>theDB</title>
+    html { scroll-behavior: smooth; }
 
-  <meta name="author" content="Danny Bolella" />
-  
-  
+    body {
+      font-family: var(--font-system);
+      background-color: var(--color-ocean-deep);
+      color: var(--color-text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-  <meta name="generator" content="Hugo 0.17" />
+    a { color: inherit; text-decoration: none; }
 
-  <link rel="alternate" href="https://dbolella.github.io/index.xml" type="application/rss+xml" title="theDB">
+    img { display: block; max-width: 100%; }
 
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="https://dbolella.github.io/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://dbolella.github.io/css/main.css" />
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
-  <link rel="stylesheet" href="https://dbolella.github.io/css/pygment_highlights.css" />
-  
-  
-  <meta property="og:title" content="theDB" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="//" />
-  <meta property="og:image" content="img/avatar.jpg" />
-  
+    /* ─── Background Canvas ─────────────────────────────────────────── */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%,  rgba(0, 80, 160, 0.35) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 80%,  rgba(100, 20, 180, 0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 100% 80% at 50% 50%, var(--color-ocean-mid) 0%, var(--color-ocean-deep) 100%);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Subtle animated wave lines */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 120px,
+          rgba(0, 229, 255, 0.025) 120px,
+          rgba(0, 229, 255, 0.025) 121px
+        );
+      z-index: -1;
+      pointer-events: none;
+      animation: drift 20s linear infinite;
+    }
+
+    @keyframes drift {
+      from { background-position: 0 0; }
+      to   { background-position: 0 120px; }
+    }
+
+    /* ─── Glass Utility ─────────────────────────────────────────────── */
+    .glass {
+      background: var(--color-glass-light);
+      backdrop-filter: var(--blur-card);
+      -webkit-backdrop-filter: var(--blur-card);
+      border: 1px solid var(--color-glass-border);
+      border-radius: var(--radius-outer);
+    }
+
+    /* ─── Navigation ────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(960px, calc(100% - 32px));
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px 12px 16px;
+      background: rgba(10, 20, 40, 0.55);
+      backdrop-filter: var(--blur-glass);
+      -webkit-backdrop-filter: var(--blur-glass);
+      border: 1px solid var(--color-glass-border);
+      border-radius: var(--radius-outer);
+      transition: var(--transition);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-brand .wordmark {
+      height: 30px;
+      width: auto;
+      display: block;
+      filter: invert(1);
+      mix-blend-mode: screen;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--color-text);
+      background: var(--color-glass-light);
+    }
+
+    .btn-nav {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-ocean-deep) !important;
+      background: var(--color-cyan) !important;
+      padding: 8px 16px !important;
+      border-radius: var(--radius-sm) !important;
+      transition: var(--transition);
+    }
+
+    .btn-nav:hover {
+      background: #33eeff !important;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+    }
+
+    /* ─── Shared Layout ─────────────────────────────────────────────── */
+    .container {
+      width: min(1040px, calc(100% - 48px));
+      margin-inline: auto;
+    }
+
+    section { padding: 100px 0; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-cyan);
+      margin-bottom: 12px;
+    }
+
+    h1, h2, h3 { letter-spacing: -0.03em; line-height: 1.15; }
+
+    /* ─── Buttons ───────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-system);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      padding: 14px 28px;
+      border-radius: var(--radius-inner);
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--color-cyan);
+      color: var(--color-ocean-deep);
+    }
+
+    .btn-primary:hover {
+      background: #33eeff;
+      box-shadow: 0 0 32px rgba(0, 229, 255, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: var(--color-glass-light);
+      color: var(--color-text);
+      border: 1px solid var(--color-glass-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-1px);
+    }
+
+    /* ─── Section 1: Hero ───────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 120px;
+      padding-bottom: 80px;
+      position: relative;
+      background-image:
+        linear-gradient(to bottom,
+          rgba(4,13,26,0.72) 0%,
+          rgba(4,13,26,0.45) 40%,
+          rgba(4,13,26,0.78) 100%),
+        url('CaptainOnBoat.jpg');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+    }
+
+    .hero-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0;
+      width: 100%;
+    }
+
+    .hero-card {
+      padding: 52px 48px 48px;
+      max-width: 760px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* inner glow ring */
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(0,229,255,0.3), transparent 50%, rgba(168,85,247,0.2));
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-cyan);
+      letter-spacing: 0.04em;
+      margin-bottom: 28px;
+    }
+
+    .hero-eyebrow::before {
+      content: "⚓";
+      font-size: 0.9em;
+    }
+
+    .hero-card h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .hero-card h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--color-cyan), var(--color-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-card p {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--color-text-muted);
+      max-width: 560px;
+      margin-inline: auto;
+      margin-bottom: 36px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .hero-scroll-hint {
+      margin-top: 56px;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: bob 2.5s ease-in-out infinite;
+    }
+
+    .hero-scroll-hint svg {
+      width: 20px;
+      opacity: 0.4;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(6px); }
+    }
+
+    /* ─── Section 2: Services ───────────────────────────────────────── */
+    #services { background: transparent; }
+
+    .services-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .services-header h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; }
+
+    .services-header p {
+      color: var(--color-text-muted);
+      max-width: 520px;
+      margin: 16px auto 0;
+      font-size: 1.05rem;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .service-card {
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 229, 255, 0.3);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .service-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: var(--color-cyan-dim);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .service-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .service-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
+    /* accent stripe */
+    .service-card::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-cyan), var(--color-purple));
+      opacity: 0;
+      transition: var(--transition);
+      border-radius: var(--radius-outer) var(--radius-outer) 0 0;
+    }
+
+    .service-card:hover::after { opacity: 1; }
+
+    /* ─── Section 3: About ──────────────────────────────────────────── */
+    #about { background: transparent; }
+
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .about-photo-wrap {
+      position: relative;
+    }
+
+    .about-photo-wrap img {
+      width: 100%;
+      border-radius: var(--radius-outer);
+      object-fit: cover;
+      aspect-ratio: 3/4;
+      border: 1px solid var(--color-glass-border);
+      display: block;
+    }
+
+    /* floating glass badge */
+    .about-badge {
+      position: absolute;
+      bottom: -16px;
+      left: -16px;
+      padding: 14px 18px;
+      border-radius: var(--radius-inner);
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .about-badge .badge-icon { font-size: 1.4rem; }
+
+    .about-badge p { color: var(--color-text-muted); font-size: 0.75rem; font-weight: 400; }
+
+    .about-text { display: flex; flex-direction: column; gap: 20px; }
+
+    .about-text h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+    }
+
+    .about-text .lead {
+      font-size: 1.05rem;
+      color: var(--color-text-muted);
+      line-height: 1.75;
+    }
+
+    .about-creds {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .about-creds li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.92rem;
+      color: var(--color-text-muted);
+    }
+
+    .about-creds li::before {
+      content: "▸";
+      color: var(--color-cyan);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── Section 4: Substack / Captain's Log ───────────────────────── */
+    #log {
+      background: linear-gradient(135deg, rgba(0,60,120,0.25), rgba(80,20,140,0.2));
+      border-top: 1px solid var(--color-glass-border);
+      border-bottom: 1px solid var(--color-glass-border);
+    }
+
+    .log-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .log-inner h2 {
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      font-weight: 800;
+    }
+
+    .log-inner p {
+      max-width: 560px;
+      color: var(--color-text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* ─── Section 5: Final CTA ──────────────────────────────────────── */
+    #cta { padding: 120px 0; }
+
+    .cta-card {
+      padding: 64px 48px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(0,229,255,0.2), transparent 50%, rgba(168,85,247,0.15));
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .cta-card h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+    }
+
+    .cta-card p {
+      max-width: 520px;
+      color: var(--color-text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* ─── Process Steps ─────────────────────────────────────────────── */
+    .process-steps {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .step-num {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--color-cyan-dim);
+      border: 1px solid rgba(0,229,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-cyan);
+      flex-shrink: 0;
+    }
+
+    .step-arrow {
+      color: rgba(255,255,255,0.2);
+      font-size: 0.75rem;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────────── */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--color-glass-border);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-brand .wordmark {
+      height: 24px;
+      width: auto;
+      display: block;
+      filter: invert(1);
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover { color: var(--color-cyan); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.3);
+      width: 100%;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      section { padding: 72px 0; }
+
+      nav { top: 10px; padding: 10px 14px; }
+
+      .nav-links .hide-mobile { display: none; }
+
+      .hero-card { padding: 36px 24px 32px; }
+
+      .about-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .about-photo-wrap img { aspect-ratio: 4/3; }
+
+      .about-badge { bottom: -12px; left: 12px; }
+
+      .cta-card { padding: 48px 24px; }
+
+      .process-steps { flex-direction: column; align-items: center; }
+
+      .step-arrow { transform: rotate(90deg); }
+
+      .footer-inner { justify-content: center; text-align: center; }
+
+      .footer-links { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-ctas { flex-direction: column; align-items: stretch; }
+      .hero-ctas .btn { justify-content: center; }
+    }
+  </style>
 </head>
+<body>
 
-
-  <body>
-
-    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="https://dbolella.github.io/">theDB</a>
+  <!-- ─── Navigation ──────────────────────────────────────────────── -->
+  <nav aria-label="Main navigation">
+    <div class="nav-brand">
+      <img src="Wordmark.png" alt="Captain SwiftUI" class="wordmark" />
     </div>
+    <ul class="nav-links">
+      <li class="hide-mobile"><a href="#services">Services</a></li>
+      <li class="hide-mobile"><a href="#about">About</a></li>
+      <li>
+        <a href="https://captainswiftui.substack.com/"
+           target="_blank" rel="noopener noreferrer">Substack</a>
+      </li>
+      <li>
+        <a class="btn-nav"
+           href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
+           target="_blank" rel="noopener noreferrer">Book a Session</a>
+      </li>
+    </ul>
+  </nav>
 
-    <div class="collapse navbar-collapse" id="main-navbar">
-      <ul class="nav navbar-nav navbar-right">
-      
-        
-          <li>
-          <a title="Blog" href="/">Blog</a>
-  	      </li>
-  	    
-      
-        
-          <li>
-          <a title="About" href="/page/about/">About</a>
-  	      </li>
-  	    
-      
-      </ul>
+  <!-- ─── Hero ────────────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-card glass">
+          <div class="hero-eyebrow">iOS Architecture &amp; Liquid Glass Consulting</div>
+          <h1>Navigate the <em>Liquid Glass</em> Transition.</h1>
+          <p>The Xcode 27 deadline in Q1 2027 is approaching with no deferral flag. Get expert, 1-on-1 iOS architecture consulting to transition your app to Apple's new design system before it breaks.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary"
+               href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
+               target="_blank" rel="noopener noreferrer">
+              Consult with the Captain
+            </a>
+            <a class="btn btn-ghost"
+               href="https://captainswiftui.substack.com/"
+               target="_blank" rel="noopener noreferrer">
+              Read the Logbook →
+            </a>
+          </div>
+        </div>
+        <div class="hero-scroll-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
     </div>
+  </section>
 
-	<div class="avatar-container">
-	  <div class="avatar-img-border">
-      
-          <a title="theDB" href="https://dbolella.github.io/">
-              <img class="avatar-img" src="https://dbolella.github.io/img/avatar.jpg" alt="theDB" />
-          </a>
-      
-	  </div>
-	</div>
+  <!-- ─── Services ────────────────────────────────────────────────── -->
+  <section id="services">
+    <div class="container">
+      <div class="services-header">
+        <div class="section-label">What's on Deck</div>
+        <h2>Consulting Services</h2>
+        <p>Tailored engagements for iOS teams navigating architecture, design system shifts, and scale.</p>
+      </div>
 
-  </div>
-</nav>
+      <div class="services-grid">
+        <div class="service-card glass">
+          <div class="service-icon">🌊</div>
+          <h3>Liquid Glass Adoption</h3>
+          <p>Future-proof your UI/UX. Reviewing z-axis hierarchy, evaluating navigation and modals, and ensuring native component compliance ahead of the mandatory Q1 2027 rollout.</p>
+        </div>
 
+        <div class="service-card glass">
+          <div class="service-icon">🗺</div>
+          <h3>Architecture &amp; Modularization</h3>
+          <p>Scalable iOS app structures, dependency management, and code reviews for enterprise-level Swift and SwiftUI codebases.</p>
+        </div>
 
-    <header class="header-section ">
-      <div class="intro-header no-img">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-              <div class="page-heading">
-                <h1>theDB</h1>
-                
-                  <hr class="small">
-                  <span class="page-subheading">Storing the data in my mind</span>
-                
-              </div>
+        <div class="service-card glass">
+          <div class="service-icon">⚙️</div>
+          <h3>Performance &amp; Debugging</h3>
+          <p>Untangling state management, optimizing Observation, and fixing rendering bottlenecks that slow your app and your team.</p>
+        </div>
+
+        <div class="service-card glass">
+          <div class="service-icon">🧭</div>
+          <h3>Retainers &amp; Mentorship</h3>
+          <p>Ongoing paired programming, team mentorship, and career navigation for iOS developers charting their course.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── About ────────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="about-inner">
+        <div class="about-photo-wrap">
+          <img src="MainProfile.JPEG" alt="Captain SwiftUI — Danny Bolella" />
+          <div class="about-badge glass">
+            <span class="badge-icon">⚓</span>
+            <div>
+              <strong>Liquid Glass Workshop</strong>
+              <p>Apple Developer Relations · NYC</p>
             </div>
           </div>
         </div>
-      </div>
-    </header>
 
-
-    <div role="main" class="container">
-      <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-          <div class="posts-list">
-            
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2017-03-03-training-days/">
-          	  <h2 class="post-title">Training Days</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    Certifiably Mind-blown
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on March 3, 2017
-              </p>
-            
-              <div class="post-entry">
-                The past week and a half has been quite the agile adventure. Opportunity after opportunity arose for me to learn and grow more than ever on my Scrum Master journey. The three key events were:
- Business Agility 2017 Certified Scrum Master Course taught by Dr. Jeff Sutherland (co-founder of Scrum and the Agile Manifesto ) Pragmatic Management Lecture by Andy Hunt (co-founder of the Agile Manifesto and author of the Pragmatic Programmer)  To say that my mind has been feeling overwhelmed lately is quite the understatement.
-          	  <a href="https://dbolella.github.io/post/2017-03-03-training-days/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-12-23-agile2/">
-          	  <h2 class="post-title">The Agile Life Pt. 2</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    So You Wanna Be A Master?
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on December 23, 2016
-              </p>
-            
-              <div class="post-entry">
-                Where I left off in my previous post was I had accepted an opportunity to become a Scrum MAster for a second agile team being spun up. This was a big shift for me because it would mean little to no coding, at least initially. Fortunately, that has changed since as I&rsquo;m acting as a part-time iOS SME now as well as Scrum Master. But I don&rsquo;t want to get ahead of myself.
-          	  <a href="https://dbolella.github.io/post/2016-12-23-agile2/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-12-09-agile/">
-          	  <h2 class="post-title">The Agile Life Pt. 1</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    Scrum, TDD, Pair Programming, Oh My!
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on December 9, 2016
-              </p>
-            
-              <div class="post-entry">
-                When I first started at TDA, one of the things I learned was that the company was interested in making a transfomation to Agile. Flashbacks immeadiatly went through my head. Learnign about agile in my software engineering course, practicing Extreme Programming (XP) during one of my internships, and hearing all about wanting to do &ldquo;agile&rdquo; at JPMC (notice the quotation marks). I&rsquo;ve seen attempts at agile, good ones and bad ones.
-          	  <a href="https://dbolella.github.io/post/2016-12-09-agile/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-11-25-learning-python-instapaper/">
-          	  <h2 class="post-title">Learning Python</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    I call it articlesofease
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on November 25, 2016
-              </p>
-            
-              <div class="post-entry">
-                My commute these days is long. I mean 1.5 - 2 hours each way long. Yeah, I know.
-So since it&rsquo;s so long, I wanted to look into what content I could bring for my long journey each day. I checked out podcasts, and that&rsquo;s cool. Audible was fine, but I didn&rsquo;t want to pay (yeah, yeah, I&rsquo;m cheap). And coding in the car produces some stomach churning results. So instead, I usually end up reading blogs or articles on some of my favorite sites.
-          	  <a href="https://dbolella.github.io/post/2016-11-25-learning-python-instapaper/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-11-11-realm/">
-          	  <h2 class="post-title">Realm</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    Enter into...
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on November 11, 2016
-              </p>
-            
-              <div class="post-entry">
-                Realm is a mobile database that is sort of a replacement to SQLlite/Core Data that is known to be lightweight and even faster than it&rsquo;s competition. Realm is free and relatively easy to include in your project (though many comment that it&rsquo;s quite difficult to remove). One of the greatest advantages is that it flattens some of the traditional Data Access boilerplate and merges Models with Objects.
-With Realm 2.
-          	  <a href="https://dbolella.github.io/post/2016-11-11-realm/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-10-28-multer-and-swifthttp/">
-          	  <h2 class="post-title">Multer &amp; SwiftHTTP</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    Uploading Swiftly to Node.JS
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on October 28, 2016
-              </p>
-            
-              <div class="post-entry">
-                For a small demo app I was building, I needed to upload a file from my app to my server to be saved locally. Straight forward, especially since this was just for a demo. What was frustrating though is I realized that trying to do this quickly with built-in code on both ends felt like it took way more than I wanted to get into (granted, never really did this before with these platforms so there&rsquo;s that, too, I suppose).
-          	  <a href="https://dbolella.github.io/post/2016-10-28-multer-and-swifthttp/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-10-14-kitura/">
-          	  <h2 class="post-title">Kitura</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    Swift, Server-side, Battlestar Galatica
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on October 14, 2016
-              </p>
-            
-              <div class="post-entry">
-                Swift is an open-source programming language that was started by Apple and is now supported by a rapidly growing community. The Swift Evolution program will help steer the language to become not only more stable, but also modern and capable. This also includes the goal of making Swift a truly cross-platform language, a vast departure for Apple.
-Many areas of software are exploring Swift, including VR, AI, and web. A big area that has been gaining support is using swift as a server-side solution.
-          	  <a href="https://dbolella.github.io/post/2016-10-14-kitura/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-            <article class="post-preview">
-              <a href="https://dbolella.github.io/post/2016-09-30-welcome/">
-          	  <h2 class="post-title">Welcome</h2>
-          	
-          	  
-          	  <h3 class="post-subtitle">
-          	    To my piece of the internet thing
-          	  </h3>
-          	    
-              </a>
-
-              <p class="post-meta">
-                Posted on September 30, 2016
-              </p>
-            
-              <div class="post-entry">
-                I&rsquo;ve been a programming since my Sophomore year of high school. That&rsquo;s 12 years. Code has taken me on an incredible journey through technology, ideas, industries, and imagination. Nearly 20 programming languages and countless lines of code later, I am where I am today.
-So where is that? For the past 2 years I was an iOS developer for a major brokerage firm. However, when the opportunity to take on a leadership role on the team came up, I transitioned from being a dev to a Scrum Master.
-          	  <a href="https://dbolella.github.io/post/2016-09-30-welcome/" class="post-read-more">[Read&nbsp;More]</a>
-              </div>
-            
-             </article>
-            
-          </div>
-
-          
+        <div class="about-text">
+          <div class="section-label">At the Helm</div>
+          <h2>The Captain knows these waters.</h2>
+          <p class="lead">
+            I'm a Lead iOS Engineer with years of experience guiding complex, high-stakes applications to production. I'm the author of the <em>Swift Cookbook</em>, and I spend my time charting the frontier of SwiftUI architecture for teams who can't afford to get lost.
+          </p>
+          <ul class="about-creds">
+            <li>Lead iOS Engineer with deep experience managing large-scale, production iOS applications.</li>
+            <li>Co-author of the <strong>Swift Cookbook</strong> — a hands-on guide to modern Swift development.</li>
+            <li>Completed an intensive, three-day Liquid Glass design workshop directly with Apple's Developer Relations and framework engineers in NYC.</li>
+            <li>Possesses the insider map of how the Liquid Glass system works — straight from the engineers who built it.</li>
+          </ul>
         </div>
       </div>
     </div>
+  </section>
 
-    <footer>
-  <div class="container beautiful-jekyll-footer">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <ul class="list-inline text-center footer-links">
-          
-          <li>
-            <a href="https://www.facebook.com/dbolella" title="Facebook">
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-          
-          <li>
-            <a href="https://github.com/dbolella" title="GitHub">
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-		      
-          <li>
-            <a href="https://twitter.com/dbolella" title="Twitter">
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-		      
-          <li>
-            <a href="mailto:dbolella@gmail.com" title="Email me">
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-		      
-          <li>
-            <a href="https://linkedin.com/in/danielbolella" title="LinkedIn">
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-	    	  
-          <li>
-            <a href="https://stackoverflow.com/users/6132145/danny-b" title="StackOverflow">
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-          
-          
-
-    		  <li>
-      			<a href="https://dbolella.github.io/index.xml" title="RSS">
-      			  <span class="fa-stack fa-lg">
-        				<i class="fa fa-circle fa-stack-2x"></i>
-        				<i class="fa fa-rss fa-stack-1x fa-inverse"></i>
-      			  </span>
-      			</a>
-    		  </li>		
-
-        </ul>
-        <p class="copyright text-muted">
-    		  Danny Bolella
-    		  &nbsp;&bull;&nbsp;
-    		  2017
-    		  
-    		  
-    		  &nbsp;&bull;&nbsp;
-    		  <a href="https://dbolella.github.io/">theDB</a>
-    		  
-  	    </p>
-  	        
-    		<p class="theme-by text-muted">
-    		  Theme by
-    		  <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
-    		</p>
+  <!-- ─── Captain's Log / Substack ────────────────────────────────── -->
+  <section id="log">
+    <div class="container">
+      <div class="log-inner">
+        <div class="section-label">The Captain's Log</div>
+        <h2>Join the Crew.</h2>
+        <p>Read in-depth architectural teardowns, iOS 26 strategic insights, and Swift engineering guides on my Substack. The logbook is always open.</p>
+        <a class="btn btn-primary"
+           href="https://captainswiftui.substack.com/"
+           target="_blank" rel="noopener noreferrer">
+          Read Captain SwiftUI
+        </a>
       </div>
     </div>
-  </div>
-</footer>
+  </section>
 
-<script src="https://dbolella.github.io/js/jquery-1.11.2.min.js"></script>
-<script src="https://dbolella.github.io/js/bootstrap.min.js"></script>
-<script src="https://dbolella.github.io/js/main.js"></script>
+  <!-- ─── Final CTA ─────────────────────────────────────────────────── -->
+  <section id="cta">
+    <div class="container">
+      <div class="cta-card glass">
+        <div class="section-label">Set Sail</div>
+        <h2>Ready to future-proof your codebase?</h2>
+        <p>Fill out the intake form with your specific needs. I'll review your request and reach out with tailored pricing, a scheduling link, and next steps.</p>
 
+        <div class="process-steps" aria-label="How it works">
+          <div class="step">
+            <span class="step-num">1</span>
+            Fill out the inquiry form
+          </div>
+          <span class="step-arrow" aria-hidden="true">›</span>
+          <div class="step">
+            <span class="step-num">2</span>
+            I'll review &amp; reach out
+          </div>
+          <span class="step-arrow" aria-hidden="true">›</span>
+          <div class="step">
+            <span class="step-num">3</span>
+            Schedule &amp; get sailing
+          </div>
+        </div>
 
+        <a class="btn btn-primary"
+           href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
+           target="_blank" rel="noopener noreferrer">
+          Fill Out Inquiry Form
+        </a>
+      </div>
+    </div>
+  </section>
 
-  </body>
+  <!-- ─── Footer ───────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="Wordmark.png" alt="Captain SwiftUI" class="wordmark" />
+        </div>
+        <ul class="footer-links">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#about">About</a></li>
+          <li>
+            <a href="https://captainswiftui.substack.com/"
+               target="_blank" rel="noopener noreferrer">Substack</a>
+          </li>
+          <li>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
+               target="_blank" rel="noopener noreferrer">Book a Session</a>
+          </li>
+        </ul>
+        <p class="footer-copy">© 2026 Captain SwiftUI. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
 </html>
