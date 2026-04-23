@@ -4,20 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="logo.PNG" />
-  <title>Captain SwiftUI — iOS Architecture & Liquid Glass Consulting</title>
-  <meta name="description" content="Expert 1-on-1 iOS architecture consulting for the Liquid Glass transition. Get ready before Xcode 27 breaks your app." />
+  <title>Danny Bolella — iOS Engineer & Author</title>
+  <meta name="description" content="Danny Bolella — Lead iOS Engineer, published author, and Swift enthusiast with 15+ years of experience." />
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dbolella.github.io/" />
-  <meta property="og:title" content="Captain SwiftUI — iOS Architecture & Liquid Glass Consulting" />
-  <meta property="og:description" content="Expert 1-on-1 iOS architecture and Liquid Glass consulting." />
-  <meta property="og:image" content="https://dbolella.github.io/SocialPreview.jpg" />
+  <meta property="og:title" content="Danny Bolella — iOS Engineer & Author" />
+  <meta property="og:description" content="Lead iOS Engineer, published author, and Swift enthusiast with 15+ years of experience." />
+  <meta property="og:image" content="https://dbolella.github.io/MainProfile.JPEG" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://dbolella.github.io/" />
-  <meta name="twitter:title" content="Captain SwiftUI — iOS Architecture & Liquid Glass Consulting" />
-  <meta name="twitter:description" content="Expert 1-on-1 iOS architecture and Liquid Glass consulting." />
-  <meta name="twitter:image" content="https://dbolella.github.io/SocialPreview.jpg" />
+  <meta name="twitter:title" content="Danny Bolella — iOS Engineer & Author" />
+  <meta name="twitter:description" content="Lead iOS Engineer, published author, and Swift enthusiast with 15+ years of experience." />
+  <meta name="twitter:image" content="https://dbolella.github.io/MainProfile.JPEG" />
 
   <style>
     /* ─── Design Tokens ─────────────────────────────────────────────── */
@@ -126,16 +126,10 @@
     }
 
     .nav-brand {
-      display: flex;
-      align-items: center;
-    }
-
-    .nav-brand .wordmark {
-      height: 30px;
-      width: auto;
-      display: block;
-      filter: invert(1);
-      mix-blend-mode: screen;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-text);
+      letter-spacing: -0.02em;
     }
 
     .nav-links {
@@ -233,7 +227,7 @@
       transform: translateY(-1px);
     }
 
-    /* ─── Section 1: Hero ───────────────────────────────────────────── */
+    /* ─── Hero ─────────────────────────────────────────────────────── */
     #hero {
       min-height: 100vh;
       display: flex;
@@ -241,15 +235,6 @@
       padding-top: 120px;
       padding-bottom: 80px;
       position: relative;
-      background-image:
-        linear-gradient(to bottom,
-          rgba(4,13,26,0.72) 0%,
-          rgba(4,13,26,0.45) 40%,
-          rgba(4,13,26,0.78) 100%),
-        url('CaptainOnBoat.jpg');
-      background-size: cover;
-      background-position: center top;
-      background-repeat: no-repeat;
     }
 
     .hero-inner {
@@ -269,7 +254,6 @@
       overflow: hidden;
     }
 
-    /* inner glow ring */
     .hero-card::before {
       content: "";
       position: absolute;
@@ -280,24 +264,13 @@
       pointer-events: none;
     }
 
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid rgba(0, 229, 255, 0.25);
-      border-radius: 100px;
-      padding: 6px 14px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--color-cyan);
-      letter-spacing: 0.04em;
-      margin-bottom: 28px;
-    }
-
-    .hero-eyebrow::before {
-      content: "⚓";
-      font-size: 0.9em;
+    .hero-photo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--color-glass-border);
+      margin: 0 auto 28px;
     }
 
     .hero-card h1 {
@@ -351,83 +324,7 @@
       50%       { transform: translateY(6px); }
     }
 
-    /* ─── Section 2: Services ───────────────────────────────────────── */
-    #services { background: transparent; }
-
-    .services-header {
-      text-align: center;
-      margin-bottom: 56px;
-    }
-
-    .services-header h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; }
-
-    .services-header p {
-      color: var(--color-text-muted);
-      max-width: 520px;
-      margin: 16px auto 0;
-      font-size: 1.05rem;
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .service-card {
-      padding: 32px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .service-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(0, 229, 255, 0.3);
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .service-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-sm);
-      background: var(--color-cyan-dim);
-      border: 1px solid rgba(0, 229, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-
-    .service-card h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .service-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-muted);
-      line-height: 1.6;
-    }
-
-    /* accent stripe */
-    .service-card::after {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--color-cyan), var(--color-purple));
-      opacity: 0;
-      transition: var(--transition);
-      border-radius: var(--radius-outer) var(--radius-outer) 0 0;
-    }
-
-    .service-card:hover::after { opacity: 1; }
-
-    /* ─── Section 3: About ──────────────────────────────────────────── */
+    /* ─── About ────────────────────────────────────────────────────── */
     #about { background: transparent; }
 
     .about-inner {
@@ -449,24 +346,6 @@
       border: 1px solid var(--color-glass-border);
       display: block;
     }
-
-    /* floating glass badge */
-    .about-badge {
-      position: absolute;
-      bottom: -16px;
-      left: -16px;
-      padding: 14px 18px;
-      border-radius: var(--radius-inner);
-      font-size: 0.82rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .about-badge .badge-icon { font-size: 1.4rem; }
-
-    .about-badge p { color: var(--color-text-muted); font-size: 0.75rem; font-weight: 400; }
 
     .about-text { display: flex; flex-direction: column; gap: 20px; }
 
@@ -539,26 +418,14 @@
       color: var(--color-cyan);
     }
 
-    .about-linkedin {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.88rem;
-      color: var(--color-text-muted);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .about-linkedin:hover { color: var(--color-cyan); }
-
-    /* ─── Section 4: Substack / Captain's Log ───────────────────────── */
-    #log {
+    /* ─── Connect ──────────────────────────────────────────────────── */
+    #connect {
       background: linear-gradient(135deg, rgba(0,60,120,0.25), rgba(80,20,140,0.2));
       border-top: 1px solid var(--color-glass-border);
       border-bottom: 1px solid var(--color-glass-border);
     }
 
-    .log-inner {
+    .connect-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -566,86 +433,44 @@
       gap: 20px;
     }
 
-    .log-inner h2 {
+    .connect-inner h2 {
       font-size: clamp(2rem, 4.5vw, 3rem);
       font-weight: 800;
     }
 
-    .log-inner p {
+    .connect-inner p {
       max-width: 560px;
       color: var(--color-text-muted);
       font-size: 1.05rem;
     }
 
-    /* ─── Section 5: Final CTA ──────────────────────────────────────── */
-    #cta { padding: 120px 0; }
-
-    .cta-card {
-      padding: 64px 48px;
-      text-align: center;
+    .connect-links {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-card::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(0,229,255,0.2), transparent 50%, rgba(168,85,247,0.15));
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    .cta-card h2 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 800;
-    }
-
-    .cta-card p {
-      max-width: 520px;
-      color: var(--color-text-muted);
-      font-size: 1.05rem;
-    }
-
-    /* ─── Process Steps ─────────────────────────────────────────────── */
-    .process-steps {
-      display: flex;
-      gap: 16px;
       flex-wrap: wrap;
+      gap: 12px;
       justify-content: center;
-      margin-top: 8px;
     }
 
-    .step {
-      display: flex;
+    .connect-link {
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-size: 0.85rem;
+      gap: 8px;
+      font-size: 0.92rem;
       color: var(--color-text-muted);
+      padding: 10px 20px;
+      border-radius: var(--radius-inner);
+      transition: var(--transition);
     }
 
-    .step-num {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      background: var(--color-cyan-dim);
-      border: 1px solid rgba(0,229,255,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
+    .connect-link:hover {
       color: var(--color-cyan);
-      flex-shrink: 0;
+      border-color: rgba(0, 229, 255, 0.3);
     }
 
-    .step-arrow {
-      color: rgba(255,255,255,0.2);
-      font-size: 0.75rem;
+    .connect-link svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
     }
 
     /* ─── Footer ────────────────────────────────────────────────────── */
@@ -663,17 +488,9 @@
     }
 
     .footer-brand {
-      display: flex;
-      align-items: center;
-    }
-
-    .footer-brand .wordmark {
-      height: 24px;
-      width: auto;
-      display: block;
-      filter: invert(1);
-      mix-blend-mode: screen;
-      opacity: 0.7;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
     }
 
     .footer-links {
@@ -704,25 +521,17 @@
 
       nav { top: 10px; padding: 10px 14px; }
 
-      .nav-links .hide-mobile { display: none; }
-
       .btn-nav { font-size: 0.75rem !important; padding: 7px 12px !important; }
 
       .hero-card { padding: 36px 24px 32px; }
+
+      .hero-photo { width: 110px; height: 110px; }
 
       .about-inner {
         grid-template-columns: 1fr;
       }
 
       .about-photo-wrap img { aspect-ratio: 4/3; }
-
-      .about-badge { bottom: -12px; left: 12px; }
-
-      .cta-card { padding: 48px 24px; }
-
-      .process-steps { flex-direction: column; align-items: center; }
-
-      .step-arrow { transform: rotate(90deg); }
 
       .footer-inner { justify-content: center; text-align: center; }
 
@@ -732,6 +541,7 @@
     @media (max-width: 480px) {
       .hero-ctas { flex-direction: column; align-items: stretch; }
       .hero-ctas .btn { justify-content: center; }
+      .connect-links { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -739,20 +549,17 @@
 
   <!-- ─── Navigation ──────────────────────────────────────────────── -->
   <nav aria-label="Main navigation">
-    <div class="nav-brand">
-      <img src="Wordmark.png" alt="Captain SwiftUI" class="wordmark" />
-    </div>
+    <div class="nav-brand">Danny Bolella</div>
     <ul class="nav-links">
-      <li class="hide-mobile"><a href="#services">Services</a></li>
-      <li class="hide-mobile"><a href="#about">About</a></li>
+      <li><a href="#about">About</a></li>
       <li>
-        <a href="https://captainswiftui.substack.com/"
-           target="_blank" rel="noopener noreferrer">Substack</a>
+        <a href="https://www.linkedin.com/in/danielbolella"
+           target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </li>
       <li>
         <a class="btn-nav"
-           href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
-           target="_blank" rel="noopener noreferrer">Book a Session</a>
+           href="https://captainswiftui.substack.com/"
+           target="_blank" rel="noopener noreferrer">Substack</a>
       </li>
     </ul>
   </nav>
@@ -762,19 +569,18 @@
     <div class="container">
       <div class="hero-inner">
         <div class="hero-card glass">
-          <div class="hero-eyebrow">iOS Architecture &amp; Liquid Glass Consulting</div>
-          <h1>Navigate the <em>Liquid Glass</em> Transition.</h1>
-          <p>The Xcode 27 deadline in Q1 2027 is approaching with no deferral flag. Get expert, 1-on-1 iOS architecture consulting to transition your app to Apple's new design system before it breaks.</p>
+          <img src="MainProfile.JPEG" alt="Danny Bolella" class="hero-photo" />
+          <h1>Hey, I'm <em>Danny</em>.</h1>
+          <p>Lead iOS Engineer, published author, and lifelong builder. I've spent over 15 years turning ideas into software across mobile, web, and everything in between.</p>
           <div class="hero-ctas">
             <a class="btn btn-primary"
-               href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
-               target="_blank" rel="noopener noreferrer">
-              Consult with the Captain
+               href="#about">
+              More About Me
             </a>
             <a class="btn btn-ghost"
-               href="https://captainswiftui.substack.com/"
+               href="https://www.linkedin.com/in/danielbolella"
                target="_blank" rel="noopener noreferrer">
-              Read the Logbook →
+              Connect on LinkedIn
             </a>
           </div>
         </div>
@@ -787,75 +593,25 @@
     </div>
   </section>
 
-  <!-- ─── Services ────────────────────────────────────────────────── -->
-  <section id="services">
-    <div class="container">
-      <div class="services-header">
-        <div class="section-label">What's on Deck</div>
-        <h2>Consulting Services</h2>
-        <p>Tailored engagements for iOS teams navigating architecture, design system shifts, and scale.</p>
-      </div>
-
-      <div class="services-grid">
-        <div class="service-card glass">
-          <div class="service-icon">🌊</div>
-          <h3>Liquid Glass Adoption</h3>
-          <p>Future-proof your UI/UX. Reviewing z-axis hierarchy, evaluating navigation and modals, and ensuring native component compliance ahead of the mandatory Q1 2027 rollout.</p>
-        </div>
-
-        <div class="service-card glass">
-          <div class="service-icon">📱</div>
-          <h3>iOS, iPadOS &amp; macOS Consulting</h3>
-          <p>End-to-end Apple platform development — from greenfield apps to legacy migrations. Whether you're shipping on iPhone, iPad, Mac, or all three, the Captain has sailed these waters across financial, energy, and medical device industries.</p>
-        </div>
-
-        <div class="service-card glass">
-          <div class="service-icon">🗺</div>
-          <h3>Architecture &amp; Modularization</h3>
-          <p>Scalable app structures, dependency management, and code reviews for enterprise-level Swift and SwiftUI codebases built to last.</p>
-        </div>
-
-        <div class="service-card glass">
-          <div class="service-icon">⚙️</div>
-          <h3>Performance &amp; Debugging</h3>
-          <p>Untangling state management, optimizing Observation, and fixing rendering bottlenecks that slow your app and your team.</p>
-        </div>
-
-        <div class="service-card glass">
-          <div class="service-icon">🧭</div>
-          <h3>Retainers &amp; Mentorship</h3>
-          <p>Ongoing paired programming, team mentorship, and career navigation for iOS developers charting their course.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ─── About ────────────────────────────────────────────────────── -->
   <section id="about">
     <div class="container">
       <div class="about-inner">
         <div class="about-photo-wrap">
-          <img src="MainProfile.JPEG" alt="Captain SwiftUI — Danny Bolella" />
-          <div class="about-badge glass">
-            <span class="badge-icon">⚓</span>
-            <div>
-              <strong>Liquid Glass Workshop</strong>
-              <p>Apple Developer Relations · NYC</p>
-            </div>
-          </div>
+          <img src="MainProfile.JPEG" alt="Danny Bolella" />
         </div>
 
         <div class="about-text">
-          <div class="section-label">At the Helm</div>
-          <h2>The Captain knows these waters.</h2>
+          <div class="section-label">About Me</div>
+          <h2>Engineer, author, mentor.</h2>
           <p class="lead">
-            Danny Bolella is a Lead iOS Engineer at a major financial services firm with over 15 years of experience — from full-stack web to native mobile across financial, energy, and medical device industries. Leading, teaching, and mentoring aren't just job requirements; they're the whole point.
+            I'm a Lead iOS Engineer at a major financial services firm. Over the past 15+ years I've worked across full-stack web and native mobile, shipping products in the financial, energy, and medical device industries. I care about clean architecture, great user experiences, and helping other engineers grow.
           </p>
           <ul class="about-creds">
             <li>Lead iOS Engineer managing large-scale, high-stakes production applications.</li>
             <li><span>Co-author of the <em>Swift Cookbook, Third Edition</em> — proven recipes for robust iOS development in Swift 5.9.</span></li>
-            <li>Completed an intensive, three-day Liquid Glass design workshop with Apple's Developer Relations and framework engineers in NYC — with the insider map to prove it.</li>
-            <li>Runs Captain SwiftUI to share what he knows: architecture, strategy, and the real-world iOS work most engineers don't talk about.</li>
+            <li>15+ years of experience spanning iPhone, iPad, macOS, and full-stack web development.</li>
+            <li>Passionate about leading, teaching, and mentoring — it's not just part of the job, it's the whole point.</li>
           </ul>
           <a class="book-card glass"
              href="https://www.amazon.com/Swift-Cookbook-recipes-developing-applications/dp/1803239581"
@@ -866,65 +622,36 @@
               <span>View on Amazon →</span>
             </div>
           </a>
-          <a class="about-linkedin"
-             href="https://www.linkedin.com/in/danielbolella?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Connect ────────────────────────────────────────────────── -->
+  <section id="connect">
+    <div class="container">
+      <div class="connect-inner">
+        <div class="section-label">Say Hello</div>
+        <h2>Let's Connect.</h2>
+        <p>Find me online — I write about iOS engineering, Swift, and the craft of building great software.</p>
+        <div class="connect-links">
+          <a class="connect-link glass"
+             href="https://www.linkedin.com/in/danielbolella"
              target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
             </svg>
-            Connect on LinkedIn
+            LinkedIn
+          </a>
+          <a class="connect-link glass"
+             href="https://captainswiftui.substack.com/"
+             target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+            </svg>
+            Substack
           </a>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── Captain's Log / Substack ────────────────────────────────── -->
-  <section id="log">
-    <div class="container">
-      <div class="log-inner">
-        <div class="section-label">The Captain's Log</div>
-        <h2>Join the Crew.</h2>
-        <p>Read in-depth architectural teardowns, iOS 26 strategic insights, and Swift engineering guides on my Substack. The logbook is always open.</p>
-        <a class="btn btn-primary"
-           href="https://captainswiftui.substack.com/"
-           target="_blank" rel="noopener noreferrer">
-          Read Captain SwiftUI
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── Final CTA ─────────────────────────────────────────────────── -->
-  <section id="cta">
-    <div class="container">
-      <div class="cta-card glass">
-        <div class="section-label">Set Sail</div>
-        <h2>Ready to future-proof your codebase?</h2>
-        <p>Fill out the intake form with your specific needs. I'll review your request and reach out with tailored pricing, a scheduling link, and next steps.</p>
-
-        <div class="process-steps" aria-label="How it works">
-          <div class="step">
-            <span class="step-num">1</span>
-            Fill out the inquiry form
-          </div>
-          <span class="step-arrow" aria-hidden="true">›</span>
-          <div class="step">
-            <span class="step-num">2</span>
-            I'll review &amp; reach out
-          </div>
-          <span class="step-arrow" aria-hidden="true">›</span>
-          <div class="step">
-            <span class="step-num">3</span>
-            Schedule &amp; get sailing
-          </div>
-        </div>
-
-        <a class="btn btn-primary"
-           href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
-           target="_blank" rel="noopener noreferrer">
-          Fill Out Inquiry Form
-        </a>
       </div>
     </div>
   </section>
@@ -933,26 +660,19 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-brand">
-          <img src="Wordmark.png" alt="Captain SwiftUI" class="wordmark" />
-        </div>
+        <div class="footer-brand">Danny Bolella</div>
         <ul class="footer-links">
-          <li><a href="#services">Services</a></li>
           <li><a href="#about">About</a></li>
+          <li>
+            <a href="https://www.linkedin.com/in/danielbolella"
+               target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          </li>
           <li>
             <a href="https://captainswiftui.substack.com/"
                target="_blank" rel="noopener noreferrer">Substack</a>
           </li>
-          <li>
-            <a href="https://www.linkedin.com/in/danielbolella?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
-               target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          </li>
-          <li>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfrc-k6ezeR5aFVJ2RUi_r5n_XWBDjVidu7d78ycVsHOlCwGg/viewform?usp=header"
-               target="_blank" rel="noopener noreferrer">Book a Session</a>
-          </li>
         </ul>
-        <p class="footer-copy">© 2026 DB Technology Services, LLC. Captain SwiftUI is a brand of DB Technology Services, LLC.</p>
+        <p class="footer-copy">&copy; 2026 Danny Bolella</p>
       </div>
     </div>
   </footer>
