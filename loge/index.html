@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Legend of Good & Evil</title>
+<link rel="icon" type="image/jpeg" href="assets/images/TitleCard.jpg">
+<link rel="apple-touch-icon" href="assets/images/TitleCard.jpg">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; height: 100dvh; overflow: hidden; }
+  canvas { display: block; image-rendering: pixelated; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+// ============================================================
+// Legend of Good & Evil — Web Version
+// ============================================================
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+// Detect touch-capable / mobile device — used for portrait layout + on-screen controls
+const IS_TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+// Virtual resolution. Landscape on desktop; orientation-aware on mobile.
+let VIEW_W = 1000;
+let VIEW_H = 600;
+
+function pickVirtualResolution() {
+  if (IS_TOUCH) {
+    const portrait = window.innerHeight >= window.innerWidth;
+    if (portrait) { VIEW_W = 600; VIEW_H = 1000; }
+    else { VIEW_W = 1000; VIEW_H = 600; }
+  } else {
+    VIEW_W = 1000; VIEW_H = 600;
+  }
+  canvas.width = VIEW_W;
+  canvas.height = VIEW_H;
+}
+pickVirtualResolution();
+
+// Resize canvas to fill window while preserving aspect ratio
+function resizeCanvas() {
+  if (IS_TOUCH) pickVirtualResolution();
+  const ratio = VIEW_W / VIEW_H;
+  let w = window.innerWidth;
+  let h = window.innerHeight;
+  if (w / h > ratio) { w = h * ratio; } else { h = w / ratio; }
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+}
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
+resizeCanvas();
+
+// ============================================================
+// Constants (matching iOS GameConstants.swift)
+// ============================================================
+const WORLD_W = 3600;
+const WORLD_H = 2400;
+const PLAYER_SIZE = 96;
+const ENEMY_SIZE = 96;
+const PLAYER_SPEED = 300;
+const ENEMY_SPEED = 100;
+const BULLET_SPEED = 500;
+const ENEMY_CHASE_RANGE = 250;
+const ENEMY_ATTACK_INTERVAL = 2.0;
+const PLAYER_ATTACK_DAMAGE = 25;
+const ENEMY_ATTACK_DAMAGE = 10;
+const PLAYER_MAX_HEALTH = 100;
+const ENEMY_MAX_HEALTH = 50;
+const SPAWN_MARGIN = 200;
+
+// ============================================================
+// Asset Loading
+// ============================================================
+const images = {};
+let totalAssets = 0;
+let loadedAssets = 0;
+
+function loadImage(name, src, maxAttempts = 4) {
+  totalAssets++;
+  return new Promise((resolve) => {
+    let attempt = 0;
+    const tryLoad = () => {
+      attempt++;
+      const img = new Image();
+      img.onload = () => { images[name] = img; loadedAssets++; resolve(); };
+      img.onerror = () => {
+        if (attempt < maxAttempts) {
+          const delay = 250 * attempt;
+          console.warn(`Image load failed (attempt ${attempt}/${maxAttempts}), retrying in ${delay}ms:`, src);
+          setTimeout(tryLoad, delay);
+        } else {
+          console.warn('Image load failed permanently:', src);
+          loadedAssets++;
+          resolve();
+        }
+      };
+      img.src = attempt === 1 ? src : `${src}?retry=${attempt}`;
+    };
+    tryLoad();
+  });
+}
+
+function loadAllAssets() {
+  return Promise.all([
+    loadImage('gameMap', 'assets/images/game_map.png'),
+    loadImage('cityPlanetMap', 'assets/images/map2.png'),
+    loadImage('titleCard', 'assets/images/TitleCard.jpg'),
+    loadImage('goodguyWalk', 'assets/images/goodguy_walk.png'),
+    loadImage('goodguySlash', 'assets/images/goodguy_slash.png'),
+    loadImage('badguyWalk', 'assets/images/badguy_walk.png'),
+    loadImage('badguySlash', 'assets/images/badguy_slash.png'),
+    loadImage('trooperWalk', 'assets/images/trooper_walk.png'),
+    loadImage('trooperShoot', 'assets/images/trooper_shoot.png'),
+  ]);
+}
+
+// ============================================================
+// Audio Manager — uses HTMLAudioElement (same media path as <video>).
+// Previously this was Web Audio API based, but on iOS Safari the
+// AudioContext could end up silent after a <video> element played
+// (and video.onended is not a user gesture, so resume() couldn't
+// reliably recover it). HTMLAudioElement uses the same path as
+// <video>, so if video sound works, music + SFX will too.
+// ============================================================
+const AudioManager = {
+  muted: false,
+  music: null,                // current HTMLAudioElement
+  currentMusicName: null,
+  musicLoopEndTime: null,
+  _loopHandler: null,
+  started: false,
+  pendingMusic: null,
+
+  unlock() {
+    if (this.started) return;
+    this.started = true;
+    if (this.pendingMusic) {
+      const { fileName, loop, loopEndTime } = this.pendingMusic;
+      this.pendingMusic = null;
+      this.playMusic(fileName, loop, loopEndTime);
+    }
+  },
+
+  playMusic(fileName, loop = true, loopEndTime = null) {
+    if (!this.started) {
+      // Wait for the first user gesture (browser autoplay policy).
+      this.pendingMusic = { fileName, loop, loopEndTime };
+      return;
+    }
+    if (this.currentMusicName === fileName && this.music && !this.music.paused) return;
+    this.stopMusic();
+
+    const a = new Audio('assets/audio/' + fileName);
+    a.preload = 'auto';
+    // If a custom loop end is set, we restart manually via timeupdate; otherwise rely on native loop.
+    a.loop = loop && !loopEndTime;
+    a.volume = this.muted ? 0 : 0.5;
+
+    if (loop && loopEndTime) {
+      this.musicLoopEndTime = loopEndTime;
+      this._loopHandler = () => {
+        if (a.currentTime >= loopEndTime) {
+          a.currentTime = 0;
+          a.play().catch(() => {});
+        }
+      };
+      a.addEventListener('timeupdate', this._loopHandler);
+    }
+
+    a.play().catch(err => console.warn('Music play failed:', fileName, err));
+    this.music = a;
+    this.currentMusicName = fileName;
+  },
+
+  stopMusic() {
+    this.pendingMusic = null;
+    if (this.music) {
+      if (this._loopHandler) {
+        this.music.removeEventListener('timeupdate', this._loopHandler);
+        this._loopHandler = null;
+      }
+      try { this.music.pause(); } catch(e) {}
+      this.music = null;
+      this.currentMusicName = null;
+      this.musicLoopEndTime = null;
+    }
+  },
+
+  playSFX(fileName) {
+    if (this.muted) return;
+    const a = new Audio('assets/audio/' + fileName);
+    a.volume = 0.6;
+    a.play().catch(() => {});
+  },
+
+  toggleMute() {
+    this.muted = !this.muted;
+    if (this.music) this.music.volume = this.muted ? 0 : 0.5;
+    return this.muted;
+  }
+};
+
+// ============================================================
+// Input System
+// ============================================================
+const keys = {};
+window.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  AudioManager.unlock();
+  // Prevent scrolling with arrow keys / space
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+// Mobile virtual joystick + attack button (mirrors iOS Joystick.swift / GameScene attackButton)
+const MobileInput = {
+  joyTouchId: null,
+  joyHandleX: 0, joyHandleY: 0,  // handle offset from base center, in canvas coords
+  joyRadius: 70,
+  vx: 0, vy: 0,                   // normalized -1..1
+  attackTouchId: null,
+  attackPressed: false,
+  attackJustPressed: false,        // edge-trigger flag, consumed once per press
+  getJoyAnchor() { return { cx: 110, cy: VIEW_H - 110 }; },
+  getAttackBtn() { return { cx: VIEW_W - 110, cy: VIEW_H - 110, r: 55 }; },
+  reset() {
+    this.joyTouchId = null;
+    this.attackTouchId = null;
+    this.attackPressed = false;
+    this.attackJustPressed = false;
+    this.vx = 0; this.vy = 0;
+    this.joyHandleX = 0; this.joyHandleY = 0;
+  }
+};
+
+function updateJoyHandle(pos) {
+  const a = MobileInput.getJoyAnchor();
+  let dx = pos.x - a.cx;
+  let dy = pos.y - a.cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const r = MobileInput.joyRadius;
+  if (dist > r && dist > 0) { dx = dx / dist * r; dy = dy / dist * r; }
+  MobileInput.joyHandleX = dx;
+  MobileInput.joyHandleY = dy;
+  MobileInput.vx = dx / r;
+  MobileInput.vy = dy / r;
+}
+
+function getMovementVector() {
+  // Mobile joystick takes priority when actively engaged
+  if (MobileInput.joyTouchId !== null && (Math.abs(MobileInput.vx) > 0.1 || Math.abs(MobileInput.vy) > 0.1)) {
+    return { x: MobileInput.vx, y: MobileInput.vy };
+  }
+  let dx = 0, dy = 0;
+  if (keys['KeyW'] || keys['ArrowUp']) dy = -1;
+  if (keys['KeyS'] || keys['ArrowDown']) dy = 1;
+  if (keys['KeyA'] || keys['ArrowLeft']) dx = -1;
+  if (keys['KeyD'] || keys['ArrowRight']) dx = 1;
+  // Normalize diagonal
+  if (dx !== 0 && dy !== 0) {
+    const len = Math.sqrt(dx * dx + dy * dy);
+    dx /= len; dy /= len;
+  }
+  return { x: dx, y: dy };
+}
+
+function isAttackPressed() {
+  return keys['Space'] || keys['KeyJ'] || MobileInput.attackPressed;
+}
+
+// ============================================================
+// Sprite Sheet Frame Extraction
+// ============================================================
+function extractFrames(imageName, columns, rows, rowToExtract, frameCount) {
+  const img = images[imageName];
+  if (!img) return [];
+  const fw = img.width / columns;
+  const fh = img.height / rows;
+  // SpriteKit uses bottom-left origin (row 0 = bottom). In canvas, row 0 = top.
+  // The iOS code extracts row 0 for right-facing which is the BOTTOM row in SpriteKit.
+  // In the actual PNG files, the bottom row in SpriteKit corresponds to the LAST row visually (top-to-bottom in canvas).
+  // LPC sprite sheets: row order top-to-bottom is typically: up, left, down, right
+  // SpriteKit flips Y, so row 0 (bottom) = the last row in the image = right-facing
+  const canvasRow = rows - 1 - rowToExtract;
+  const frames = [];
+  for (let i = 0; i < frameCount; i++) {
+    frames.push({
+      img: img,
+      sx: i * fw,
+      sy: canvasRow * fh,
+      sw: fw,
+      sh: fh
+    });
+  }
+  return frames;
+}
+
+// ============================================================
+// Scene System
+// ============================================================
+let currentScene = null;
+
+function switchScene(newScene) {
+  currentScene = newScene;
+  if (newScene.init) newScene.init();
+}
+
+// ============================================================
+// Title Scene
+// ============================================================
+const TitleScene = {
+  stars: [],
+  enterHover: false,
+
+  init() {
+    this.stars = [];
+    for (let i = 0; i < 50; i++) {
+      this.stars.push({
+        x: Math.random() * VIEW_W,
+        y: Math.random() * VIEW_H,
+        radius: 1 + Math.random(),
+        alpha: 0.2 + Math.random() * 0.6,
+        speed: 30 + Math.random() * 80
+      });
+    }
+  },
+
+  update(dt) {
+    for (const s of this.stars) {
+      s.x -= s.speed * dt;
+      if (s.x < -5) s.x = VIEW_W + 5;
+    }
+  },
+
+  draw() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+    // Stars
+    for (const s of this.stars) {
+      ctx.globalAlpha = s.alpha;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Title Card
+    if (images.titleCard) {
+      const img = images.titleCard;
+      const scale = Math.min(VIEW_W / img.width, (VIEW_H * 0.7) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      ctx.drawImage(img, (VIEW_W - w) / 2, VIEW_H * 0.55 - h / 2, w, h);
+    }
+
+    // Enter Game button
+    const btnX = VIEW_W / 2 - 150;
+    const btnY = VIEW_H * 0.8 - 30;
+    const btnW = 300;
+    const btnH = 60;
+    this._enterBtn = { x: btnX, y: btnY, w: btnW, h: btnH };
+
+    ctx.fillStyle = this.enterHover ? '#4CAF50' : '#388E3C';
+    ctx.strokeStyle = '#66BB6A';
+    ctx.lineWidth = 2;
+    roundRect(ctx, btnX, btnY, btnW, btnH, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 24px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Enter Game', VIEW_W / 2, btnY + btnH / 2);
+
+    // Controls hint
+    ctx.font = '14px "Courier New", monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    if (IS_TOUCH) {
+      ctx.fillText('Tap "Enter Game" to begin', VIEW_W / 2, VIEW_H - 20);
+    } else {
+      ctx.fillText('WASD / Arrows = Move | Space = Attack | M = Mute', VIEW_W / 2, VIEW_H - 20);
+    }
+  },
+
+  onClick(mx, my) {
+    if (this._enterBtn && hitTest(mx, my, this._enterBtn)) {
+      switchScene(MenuScene);
+    }
+  },
+
+  onMouseMove(mx, my) {
+    this.enterHover = this._enterBtn && hitTest(mx, my, this._enterBtn);
+  }
+};
+
+// ============================================================
+// Menu Scene
+// ============================================================
+const MenuScene = {
+  hoverBtn: null,
+  _buttons: [],
+
+  init() {
+    this.hoverBtn = null;
+  },
+
+  update(dt) {},
+
+  draw() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+    // Title card background
+    if (images.titleCard) {
+      const img = images.titleCard;
+      const scale = Math.min(VIEW_W / img.width, VIEW_H / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      ctx.globalAlpha = 0.4;
+      ctx.drawImage(img, (VIEW_W - w) / 2, (VIEW_H - h) / 2, w, h);
+      ctx.globalAlpha = 1;
+    }
+
+    // Title text
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 36px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Choose Your Path', VIEW_W / 2, VIEW_H * 0.2);
+
+    this._buttons = [];
+
+    // Shooby-dooby button
+    const btn1 = { x: VIEW_W / 2 - 150, y: VIEW_H * 0.4 - 30, w: 300, h: 60, id: 'shooby' };
+    this._buttons.push(btn1);
+    ctx.fillStyle = this.hoverBtn === 'shooby' ? '#F44336' : '#C62828';
+    ctx.strokeStyle = '#EF5350';
+    ctx.lineWidth = 2;
+    roundRect(ctx, btn1.x, btn1.y, btn1.w, btn1.h, 12);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px "Courier New", monospace';
+    ctx.fillText('Shooby-dooby', VIEW_W / 2, btn1.y + btn1.h / 2);
+
+    // Baconhead button
+    const btn2 = { x: VIEW_W / 2 - 150, y: VIEW_H * 0.6 - 30, w: 300, h: 60, id: 'bacon' };
+    this._buttons.push(btn2);
+    ctx.fillStyle = this.hoverBtn === 'bacon' ? '#2196F3' : '#1565C0';
+    ctx.strokeStyle = '#42A5F5';
+    ctx.lineWidth = 2;
+    roundRect(ctx, btn2.x, btn2.y, btn2.w, btn2.h, 12);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Baconhead', VIEW_W / 2, btn2.y + btn2.h / 2);
+
+    // Back button
+    const btn3 = { x: 20, y: VIEW_H - 50, w: 80, h: 36, id: 'back' };
+    this._buttons.push(btn3);
+    ctx.fillStyle = this.hoverBtn === 'back' ? '#757575' : '#424242';
+    ctx.strokeStyle = '#9E9E9E';
+    ctx.lineWidth = 1;
+    roundRect(ctx, btn3.x, btn3.y, btn3.w, btn3.h, 8);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px "Courier New", monospace';
+    ctx.fillText('Back', btn3.x + btn3.w / 2, btn3.y + btn3.h / 2);
+
+    // Credits — split across two lines on narrow (portrait/mobile) layouts
+    ctx.font = 'italic 14px "Courier New", monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.textAlign = 'center';
+    if (VIEW_W < 800) {
+      ctx.fillText('Created by Theodore and Maxwell Bolella', VIEW_W / 2, VIEW_H - 50);
+      ctx.fillText('(with help from their dad, Danny)', VIEW_W / 2, VIEW_H - 32);
+    } else {
+      ctx.fillText('Created by Theodore and Maxwell Bolella (with help from their dad, Danny)', VIEW_W / 2, VIEW_H - 36);
+    }
+
+    // Controls hint
+    ctx.font = '14px "Courier New", monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.textAlign = 'center';
+    if (!IS_TOUCH) {
+      ctx.fillText('WASD / Arrows = Move | Space = Attack | M = Mute | ESC = Menu', VIEW_W / 2, VIEW_H - 10);
+    }
+  },
+
+  onClick(mx, my) {
+    for (const btn of this._buttons) {
+      if (hitTest(mx, my, btn)) {
+        if (btn.id === 'shooby') { goToMapSelect('shoobyDooby'); }
+        else if (btn.id === 'bacon') { goToMapSelect('baconhead'); }
+        else if (btn.id === 'back') { switchScene(TitleScene); }
+      }
+    }
+  },
+
+  onMouseMove(mx, my) {
+    this.hoverBtn = null;
+    for (const btn of this._buttons) {
+      if (hitTest(mx, my, btn)) { this.hoverBtn = btn.id; break; }
+    }
+  }
+};
+
+// ============================================================
+// Map Select Scene
+// ============================================================
+const MapSelectScene = {
+  characterType: null,
+  hoverBtn: null,
+  _buttons: [],
+
+  init() {
+    this.hoverBtn = null;
+  },
+
+  update(dt) {},
+
+  draw() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+    if (images.titleCard) {
+      const img = images.titleCard;
+      const scale = Math.min(VIEW_W / img.width, VIEW_H / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      ctx.globalAlpha = 0.4;
+      ctx.drawImage(img, (VIEW_W - w) / 2, (VIEW_H - h) / 2, w, h);
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 36px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Choose Your Map', VIEW_W / 2, VIEW_H * 0.2);
+
+    this._buttons = [];
+
+    const btn1 = { x: VIEW_W / 2 - 150, y: VIEW_H * 0.4 - 30, w: 300, h: 60, id: 'spaceship' };
+    this._buttons.push(btn1);
+    ctx.fillStyle = this.hoverBtn === 'spaceship' ? '#AB47BC' : '#6A1B9A';
+    ctx.strokeStyle = '#CE93D8';
+    ctx.lineWidth = 2;
+    roundRect(ctx, btn1.x, btn1.y, btn1.w, btn1.h, 12);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px "Courier New", monospace';
+    ctx.fillText('Spaceship', VIEW_W / 2, btn1.y + btn1.h / 2);
+
+    const btn2 = { x: VIEW_W / 2 - 150, y: VIEW_H * 0.6 - 30, w: 300, h: 60, id: 'cityPlanet' };
+    this._buttons.push(btn2);
+    ctx.fillStyle = this.hoverBtn === 'cityPlanet' ? '#26C6DA' : '#00838F';
+    ctx.strokeStyle = '#4DD0E1';
+    ctx.lineWidth = 2;
+    roundRect(ctx, btn2.x, btn2.y, btn2.w, btn2.h, 12);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.fillText('City Planet', VIEW_W / 2, btn2.y + btn2.h / 2);
+
+    const btn3 = { x: 20, y: VIEW_H - 50, w: 80, h: 36, id: 'back' };
+    this._buttons.push(btn3);
+    ctx.fillStyle = this.hoverBtn === 'back' ? '#757575' : '#424242';
+    ctx.strokeStyle = '#9E9E9E';
+    ctx.lineWidth = 1;
+    roundRect(ctx, btn3.x, btn3.y, btn3.w, btn3.h, 8);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px "Courier New", monospace';
+    ctx.fillText('Back', btn3.x + btn3.w / 2, btn3.y + btn3.h / 2);
+  },
+
+  onClick(mx, my) {
+    for (const btn of this._buttons) {
+      if (hitTest(mx, my, btn)) {
+        if (btn.id === 'spaceship') { playCutscene(this.characterType, 'spaceship'); }
+        else if (btn.id === 'cityPlanet') { playCutscene(this.characterType, 'cityPlanet'); }
+        else if (btn.id === 'back') { switchScene(MenuScene); }
+      }
+    }
+  },
+
+  onMouseMove(mx, my) {
+    this.hoverBtn = null;
+    for (const btn of this._buttons) {
+      if (hitTest(mx, my, btn)) { this.hoverBtn = btn.id; break; }
+    }
+  }
+};
+
+function goToMapSelect(characterType) {
+  MapSelectScene.characterType = characterType;
+  switchScene(MapSelectScene);
+}
+
+// ============================================================
+// Cutscene Scene — plays a short intro video for the chosen character.
+// Video is rendered to the canvas via drawImage(videoEl) so the skip
+// button + aspect-fit layout share the rest of the game's coordinate
+// system. The <video> element lives off-screen in the DOM (Safari won't
+// produce fresh frames for fully-detached or display:none video).
+// ============================================================
+const CutsceneScene = {
+  characterType: null,
+  mapType: null,
+  videoEl: null,
+  skipBtn: null,
+  hoverSkip: false,
+  finished: false,
+
+  _ensureVideoEl() {
+    if (this.videoEl) return;
+    const v = document.createElement('video');
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    v.preload = 'auto';
+    v.style.position = 'fixed';
+    v.style.left = '-9999px';
+    v.style.top = '0';
+    v.style.width = '2px';
+    v.style.height = '2px';
+    v.style.opacity = '0';
+    v.style.pointerEvents = 'none';
+    document.body.appendChild(v);
+    this.videoEl = v;
+  },
+
+  init() {
+    AudioManager.stopMusic();
+    this.finished = false;
+    this.hoverSkip = false;
+    this._ensureVideoEl();
+
+    const file = this.characterType === 'shoobyDooby' ? 'badguy.mp4' : 'goodguy.mp4';
+    const v = this.videoEl;
+    v.src = 'assets/videos/' + file;
+    v.currentTime = 0;
+    v.onended = () => this.finish();
+
+    // Triggered inside the menu tap/click — autoplay-with-sound is allowed
+    const p = v.play();
+    if (p && p.catch) p.catch((err) => {
+      console.warn('Cutscene play failed, falling back to muted:', err);
+      v.muted = true;
+      v.play().catch(() => this.finish());
+    });
+  },
+
+  update(dt) {},
+
+  draw() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+    const v = this.videoEl;
+    if (v && v.videoWidth > 0) {
+      const scale = Math.min(VIEW_W / v.videoWidth, VIEW_H / v.videoHeight);
+      const w = v.videoWidth * scale;
+      const h = v.videoHeight * scale;
+      ctx.drawImage(v, (VIEW_W - w) / 2, (VIEW_H - h) / 2, w, h);
+    } else {
+      ctx.fillStyle = '#fff';
+      ctx.font = '20px "Courier New", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Loading...', VIEW_W / 2, VIEW_H / 2);
+    }
+
+    // Skip button — bottom right
+    const btnW = 110, btnH = 44;
+    const btn = { x: VIEW_W - btnW - 20, y: VIEW_H - btnH - 20, w: btnW, h: btnH, id: 'skip' };
+    this.skipBtn = btn;
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = this.hoverSkip ? '#757575' : '#424242';
+    roundRect(ctx, btn.x, btn.y, btn.w, btn.h, 8);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#9E9E9E';
+    ctx.lineWidth = 1;
+    roundRect(ctx, btn.x, btn.y, btn.w, btn.h, 8);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Skip ▶', btn.x + btn.w / 2, btn.y + btn.h / 2);
+  },
+
+  onClick(mx, my) {
+    if (this.skipBtn && hitTest(mx, my, this.skipBtn)) this.finish();
+  },
+
+  onMouseMove(mx, my) {
+    this.hoverSkip = !!(this.skipBtn && hitTest(mx, my, this.skipBtn));
+  },
+
+  finish() {
+    if (this.finished) return;
+    this.finished = true;
+    if (this.videoEl) {
+      this.videoEl.pause();
+      this.videoEl.onended = null;
+      this.videoEl.removeAttribute('src');
+      try { this.videoEl.load(); } catch(e) {}
+    }
+    startGame(this.characterType, this.mapType);
+  }
+};
+
+function playCutscene(characterType, mapType) {
+  CutsceneScene.characterType = characterType;
+  CutsceneScene.mapType = mapType;
+  switchScene(CutsceneScene);
+}
+
+// ============================================================
+// Game Scene
+// ============================================================
+let game = null;
+
+function startGame(characterType, mapType) {
+  AudioManager.stopMusic();
+  game = new GameState(characterType, mapType);
+  switchScene(GameSceneController);
+}
+
+function backToTitle() {
+  AudioManager.stopMusic();
+  AudioManager.playMusic('Sovereign_Dawn.mp3', true);
+  MobileInput.reset();
+}
+
+class GameState {
+  constructor(characterType, mapType) {
+    this.characterType = characterType;
+    this.mapType = mapType || 'spaceship';
+    this.score = 0;
+
+    // Camera
+    this.camX = 0;
+    this.camY = 0;
+
+    // Player
+    this.player = this.createPlayer();
+
+    // Enemies
+    this.enemies = [];
+    for (let i = 0; i < 3; i++) this.spawnEnemy();
+
+    // Projectiles
+    this.projectiles = [];
+
+    // Attack hitboxes
+    this.attackHitboxes = [];
+
+    // Pending enemy respawns
+    this.pendingSpawns = [];
+
+    // Start game music
+    const musicFile = this.mapType === 'cityPlanet' ? 'Midnight_Siege.mp3' : 'Zenith_Maneuver.mp3';
+    AudioManager.playMusic(musicFile, true, 28.0);
+  }
+
+  createPlayer() {
+    const isShooby = this.characterType === 'shoobyDooby';
+    const walkName = isShooby ? 'badguyWalk' : 'goodguyWalk';
+    const slashName = isShooby ? 'badguySlash' : 'goodguySlash';
+
+    const walkFrames = extractFrames(walkName, 13, 4, 0, 9);
+    const attackFrames = extractFrames(slashName, 6, 4, 0, 6);
+    const idleFrames = walkFrames.length > 0 ? [walkFrames[0]] : [];
+
+    return {
+      x: 0, y: 0,
+      w: PLAYER_SIZE, h: PLAYER_SIZE,
+      vx: 0, vy: 0,
+      facingRight: true,
+      isMoving: false,
+      isAttacking: false,
+      attackTimer: 0,
+      flashTimer: 0,
+      animFrame: 0,
+      animTimer: 0,
+      walkFrames,
+      attackFrames,
+      idleFrames,
+      // Attack visual uses larger frames
+      attackW: 288, attackH: 288
+    };
+  }
+
+  spawnEnemy() {
+    const halfW = WORLD_W / 2 - SPAWN_MARGIN;
+    const halfH = WORLD_H / 2 - SPAWN_MARGIN;
+    let ex = (Math.random() * 2 - 1) * halfW;
+    let ey = (Math.random() * 2 - 1) * halfH;
+
+    // Ensure not too close to player
+    const dx = ex - this.player.x;
+    const dy = ey - this.player.y;
+    if (Math.sqrt(dx * dx + dy * dy) < 300) ex += 400;
+
+    const walkFrames = extractFrames('trooperWalk', 13, 4, 0, 9);
+    const shootFrames = extractFrames('trooperShoot', 13, 4, 0, 13);
+    const idleFrames = walkFrames.length > 0 ? [walkFrames[0]] : [];
+
+    this.enemies.push({
+      x: ex, y: ey,
+      w: ENEMY_SIZE, h: ENEMY_SIZE,
+      vx: 0, vy: 0,
+      health: ENEMY_MAX_HEALTH,
+      facingRight: true,
+      isMoving: false,
+      isShooting: false,
+      lastAttackTime: 0,
+      animFrame: 0,
+      animTimer: 0,
+      shootAnimFrame: 0,
+      shootAnimTimer: 0,
+      flashTimer: 0,
+      walkFrames,
+      shootFrames,
+      idleFrames
+    });
+  }
+
+  update(dt, currentTime) {
+    // Process pending spawns
+    for (let i = this.pendingSpawns.length - 1; i >= 0; i--) {
+      this.pendingSpawns[i] -= dt;
+      if (this.pendingSpawns[i] <= 0) {
+        this.spawnEnemy();
+        this.pendingSpawns.splice(i, 1);
+      }
+    }
+
+    this.updatePlayer(dt);
+    this.updateEnemies(dt, currentTime);
+    this.updateProjectiles(dt);
+    this.updateAttackHitboxes(dt);
+    this.checkCollisions();
+    this.updateCamera(dt);
+  }
+
+  updatePlayer(dt) {
+    const p = this.player;
+    const dir = getMovementVector();
+
+    p.vx = dir.x * PLAYER_SPEED;
+    p.vy = dir.y * PLAYER_SPEED;
+
+    // Apply movement
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+
+    // Clamp to world bounds
+    const halfW = WORLD_W / 2 - p.w / 2;
+    const halfH = WORLD_H / 2 - p.h / 2;
+    p.x = Math.max(-halfW, Math.min(halfW, p.x));
+    p.y = Math.max(-halfH, Math.min(halfH, p.y));
+
+    // Facing direction
+    if (dir.x > 0) p.facingRight = true;
+    else if (dir.x < 0) p.facingRight = false;
+
+    const wasMoving = p.isMoving;
+    p.isMoving = (dir.x !== 0 || dir.y !== 0);
+
+    // Reset animation frame on state change
+    if (p.isMoving !== wasMoving && !p.isAttacking) {
+      p.animFrame = 0;
+      p.animTimer = 0;
+    }
+
+    // Attack
+    if (isAttackPressed() && !p.isAttacking) {
+      p.isAttacking = true;
+      p.attackTimer = 0;
+      p.animFrame = 0;
+      p.animTimer = 0;
+
+      // Spawn attack hitbox
+      const offsetX = p.facingRight ? 45 : -45;
+      this.attackHitboxes.push({
+        x: p.x + offsetX,
+        y: p.y,
+        w: 90, h: 90,
+        timer: 0.2,
+        hit: new Set()
+      });
+    }
+
+    // Attack animation
+    if (p.isAttacking) {
+      p.attackTimer += dt;
+      p.animTimer += dt;
+      const attackFrameDuration = 0.05;
+      if (p.animTimer >= attackFrameDuration) {
+        p.animTimer -= attackFrameDuration;
+        p.animFrame++;
+        if (p.animFrame >= p.attackFrames.length) {
+          p.isAttacking = false;
+          p.animFrame = 0;
+          p.animTimer = 0;
+        }
+      }
+    } else {
+      // Walk/idle animation
+      const frames = p.isMoving ? p.walkFrames : p.idleFrames;
+      if (frames.length > 0) {
+        p.animTimer += dt;
+        if (p.animTimer >= 0.1) {
+          p.animTimer -= 0.1;
+          p.animFrame = (p.animFrame + 1) % frames.length;
+        }
+      }
+    }
+
+    // Flash timer
+    if (p.flashTimer > 0) p.flashTimer -= dt;
+  }
+
+  updateEnemies(dt, currentTime) {
+    for (const e of this.enemies) {
+      if (e.health <= 0) continue;
+
+      if (e.isShooting) {
+        e.shootAnimTimer += dt;
+        if (e.shootAnimTimer >= 0.05) {
+          e.shootAnimTimer -= 0.05;
+          e.shootAnimFrame++;
+          if (e.shootAnimFrame >= e.shootFrames.length) {
+            // Fire projectile at end of animation
+            this.spawnProjectile(e);
+            e.isShooting = false;
+            e.shootAnimFrame = 0;
+            e.animFrame = 0;
+            e.animTimer = 0;
+          }
+        }
+        continue;
+      }
+
+      const dx = this.player.x - e.x;
+      const dy = this.player.y - e.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist > ENEMY_CHASE_RANGE) {
+        // Chase
+        const angle = Math.atan2(dy, dx);
+        e.vx = Math.cos(angle) * ENEMY_SPEED;
+        e.vy = Math.sin(angle) * ENEMY_SPEED;
+        e.x += e.vx * dt;
+        e.y += e.vy * dt;
+
+        // Clamp to world
+        const halfW = WORLD_W / 2 - e.w / 2;
+        const halfH = WORLD_H / 2 - e.h / 2;
+        e.x = Math.max(-halfW, Math.min(halfW, e.x));
+        e.y = Math.max(-halfH, Math.min(halfH, e.y));
+
+        if (dx > 0) e.facingRight = true;
+        else e.facingRight = false;
+
+        if (!e.isMoving) { e.animFrame = 0; e.animTimer = 0; }
+        e.isMoving = true;
+
+        e.animTimer += dt;
+        if (e.animTimer >= 0.1) {
+          e.animTimer -= 0.1;
+          e.animFrame = (e.animFrame + 1) % e.walkFrames.length;
+        }
+      } else {
+        // In range — stop and attack
+        e.vx = 0; e.vy = 0;
+        e.isMoving = false;
+
+        if (dx > 0) e.facingRight = true;
+        else e.facingRight = false;
+
+        if (currentTime - e.lastAttackTime > ENEMY_ATTACK_INTERVAL) {
+          e.isShooting = true;
+          e.shootAnimFrame = 0;
+          e.shootAnimTimer = 0;
+          e.lastAttackTime = currentTime;
+        }
+      }
+
+      if (e.flashTimer > 0) e.flashTimer -= dt;
+    }
+  }
+
+  spawnProjectile(enemy) {
+    const offsetX = enemy.facingRight ? 30 : -30;
+    const bx = enemy.x + offsetX;
+    const by = enemy.y;
+    const dx = this.player.x - bx;
+    const dy = this.player.y - by;
+    const angle = Math.atan2(dy, dx);
+
+    this.projectiles.push({
+      x: bx, y: by,
+      vx: Math.cos(angle) * BULLET_SPEED,
+      vy: Math.sin(angle) * BULLET_SPEED,
+      w: 20, h: 5,
+      angle: angle,
+      timer: 2.0
+    });
+  }
+
+  updateProjectiles(dt) {
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const b = this.projectiles[i];
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      b.timer -= dt;
+      if (b.timer <= 0) {
+        this.projectiles.splice(i, 1);
+      }
+    }
+  }
+
+  updateAttackHitboxes(dt) {
+    for (let i = this.attackHitboxes.length - 1; i >= 0; i--) {
+      this.attackHitboxes[i].timer -= dt;
+      if (this.attackHitboxes[i].timer <= 0) {
+        this.attackHitboxes.splice(i, 1);
+      }
+    }
+  }
+
+  checkCollisions() {
+    const p = this.player;
+
+    // Player attack hitboxes vs enemies
+    for (const hb of this.attackHitboxes) {
+      for (let i = this.enemies.length - 1; i >= 0; i--) {
+        const e = this.enemies[i];
+        if (e.health <= 0) continue;
+        if (hb.hit.has(e)) continue;
+
+        if (aabbOverlap(hb, e)) {
+          hb.hit.add(e);
+          e.health -= PLAYER_ATTACK_DAMAGE;
+          e.flashTimer = 0.2;
+          AudioManager.playSFX('strike_sound.mp3');
+
+          if (e.health <= 0) {
+            this.score += 100;
+            this.enemies.splice(i, 1);
+            this.pendingSpawns.push(1.0); // Respawn after 1 sec
+          }
+        }
+      }
+    }
+
+    // Projectiles vs player
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const b = this.projectiles[i];
+      if (aabbOverlap({ x: b.x, y: b.y, w: b.w, h: b.h }, p)) {
+        this.projectiles.splice(i, 1);
+        p.flashTimer = 0.2;
+        this.score = Math.max(0, this.score - 25);
+      }
+    }
+  }
+
+  updateCamera(dt) {
+    const lerp = 0.1;
+    this.camX += (this.player.x - this.camX) * lerp;
+    this.camY += (this.player.y - this.camY) * lerp;
+
+    // Clamp camera
+    const halfVW = VIEW_W / 2;
+    const halfVH = VIEW_H / 2;
+    const halfMW = WORLD_W / 2;
+    const halfMH = WORLD_H / 2;
+    this.camX = Math.max(-halfMW + halfVW, Math.min(halfMW - halfVW, this.camX));
+    this.camY = Math.max(-halfMH + halfVH, Math.min(halfMH - halfVH, this.camY));
+  }
+}
+
+const GameSceneController = {
+  hoverBtn: null,
+  _buttons: [],
+
+  init() {},
+
+  update(dt) {
+    if (!game) return;
+
+    // Mute toggle
+    if (keys['KeyM'] && !this._mWasDown) {
+      AudioManager.toggleMute();
+    }
+    this._mWasDown = keys['KeyM'];
+
+    // ESC to menu
+    if (keys['Escape'] && !this._escWasDown) {
+      backToTitle();
+      switchScene(MenuScene);
+      return;
+    }
+    this._escWasDown = keys['Escape'];
+
+    const now = performance.now() / 1000;
+    game.update(dt, now);
+  },
+
+  draw() {
+    if (!game) return;
+    const g = game;
+    const p = g.player;
+
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+    // Transform to world coordinates
+    ctx.save();
+    ctx.translate(VIEW_W / 2 - g.camX, VIEW_H / 2 - g.camY);
+
+    // Background map
+    const mapImg = g.mapType === 'cityPlanet' ? images.cityPlanetMap : images.gameMap;
+    if (mapImg) {
+      ctx.drawImage(mapImg, -WORLD_W / 2, -WORLD_H / 2, WORLD_W, WORLD_H);
+    }
+
+    // Draw enemies
+    for (const e of g.enemies) {
+      if (e.health <= 0) continue;
+      drawEntity(e, e.isShooting);
+    }
+
+    // Draw projectiles
+    ctx.fillStyle = '#FF0000';
+    for (const b of g.projectiles) {
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(b.angle);
+      ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h);
+      ctx.restore();
+    }
+
+    // Draw player
+    drawPlayer(p);
+
+    ctx.restore();
+
+    // HUD (screen-space)
+    drawHUD(g);
+  },
+
+  onClick(mx, my) {
+    for (const btn of this._buttons) {
+      if (hitTest(mx, my, btn)) {
+        if (btn.id === 'menu') {
+          backToTitle();
+          switchScene(MenuScene);
+        } else if (btn.id === 'mute') {
+          AudioManager.toggleMute();
+        } else if (btn.id === 'restart') {
+          startGame(game.characterType, game.mapType);
+        }
+      }
+    }
+  },
+
+  onMouseMove(mx, my) {
+    this.hoverBtn = null;
+    for (const btn of this._buttons) {
+      if (hitTest(mx, my, btn)) { this.hoverBtn = btn.id; break; }
+    }
+  }
+};
+
+function drawEntity(e, shooting) {
+  let frames, frameIdx;
+  if (shooting && e.shootFrames.length > 0) {
+    frames = e.shootFrames;
+    frameIdx = Math.min(e.shootAnimFrame, frames.length - 1);
+  } else if (e.isMoving && e.walkFrames.length > 0) {
+    frames = e.walkFrames;
+    frameIdx = e.animFrame % frames.length;
+  } else if (e.idleFrames.length > 0) {
+    frames = e.idleFrames;
+    frameIdx = 0;
+  } else {
+    // Fallback colored square
+    ctx.fillStyle = e.flashTimer > 0 ? '#FF4444' : '#884444';
+    ctx.fillRect(e.x - e.w / 2, e.y - e.h / 2, e.w, e.h);
+    return;
+  }
+
+  const f = frames[frameIdx];
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  if (!e.facingRight) ctx.scale(-1, 1);
+
+  // Flash red on damage
+  if (e.flashTimer > 0) {
+    ctx.globalAlpha = 0.5 + Math.sin(performance.now() * 0.02) * 0.5;
+  }
+
+  ctx.drawImage(f.img, f.sx, f.sy, f.sw, f.sh, -e.w / 2, -e.h / 2, e.w, e.h);
+
+  if (e.flashTimer > 0) ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function drawPlayer(p) {
+  if (p.isAttacking && p.attackFrames.length > 0) {
+    const f = p.attackFrames[Math.min(p.animFrame, p.attackFrames.length - 1)];
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    if (!p.facingRight) ctx.scale(-1, 1);
+
+    if (p.flashTimer > 0) {
+      ctx.globalAlpha = 0.5 + Math.sin(performance.now() * 0.02) * 0.5;
+    }
+
+    // Attack frames are drawn larger (288x288) centered on player
+    ctx.drawImage(f.img, f.sx, f.sy, f.sw, f.sh, -p.attackW / 2, -p.attackH / 2, p.attackW, p.attackH);
+
+    if (p.flashTimer > 0) ctx.globalAlpha = 1;
+    ctx.restore();
+  } else {
+    const frames = p.isMoving ? p.walkFrames : p.idleFrames;
+    if (frames.length === 0) {
+      ctx.fillStyle = p.flashTimer > 0 ? '#FF4444' : '#4488FF';
+      ctx.fillRect(p.x - p.w / 2, p.y - p.h / 2, p.w, p.h);
+      return;
+    }
+
+    const f = frames[p.animFrame % frames.length];
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    if (!p.facingRight) ctx.scale(-1, 1);
+
+    if (p.flashTimer > 0) {
+      ctx.globalAlpha = 0.5 + Math.sin(performance.now() * 0.02) * 0.5;
+    }
+
+    ctx.drawImage(f.img, f.sx, f.sy, f.sw, f.sh, -p.w / 2, -p.h / 2, p.w, p.h);
+
+    if (p.flashTimer > 0) ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+}
+
+function drawHUD(g) {
+  const p = g.player;
+  GameSceneController._buttons = [];
+
+  // Score — top right
+  ctx.fillStyle = '#FFD700';
+  ctx.font = 'bold 24px "Courier New", monospace';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillText('SCORE: ' + g.score, VIEW_W - 20, 15);
+
+  // Menu button — top left
+  const menuBtn = { x: 15, y: 10, w: 80, h: 32, id: 'menu' };
+  GameSceneController._buttons.push(menuBtn);
+  ctx.fillStyle = GameSceneController.hoverBtn === 'menu' ? '#757575' : '#424242';
+  ctx.globalAlpha = 0.8;
+  roundRect(ctx, menuBtn.x, menuBtn.y, menuBtn.w, menuBtn.h, 6);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 14px "Courier New", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('MENU', menuBtn.x + menuBtn.w / 2, menuBtn.y + menuBtn.h / 2 + 1);
+  ctx.textBaseline = 'middle';
+
+  // Mute button
+  const muteBtn = { x: 15, y: 48, w: 80, h: 32, id: 'mute' };
+  GameSceneController._buttons.push(muteBtn);
+  ctx.fillStyle = GameSceneController.hoverBtn === 'mute' ? '#757575' : '#424242';
+  ctx.globalAlpha = 0.8;
+  roundRect(ctx, muteBtn.x, muteBtn.y, muteBtn.w, muteBtn.h, 6);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#fff';
+  ctx.fillText(AudioManager.muted ? 'UNMUTE' : 'MUTE', muteBtn.x + muteBtn.w / 2, muteBtn.y + muteBtn.h / 2 + 1);
+
+  // Minimap — below score, top right
+  const mmW = 120, mmH = 80;
+  const mmX = VIEW_W - mmW - 20;
+  const mmY = 45;
+  ctx.fillStyle = 'rgba(20, 20, 20, 0.7)';
+  ctx.strokeStyle = 'rgba(100, 100, 100, 0.8)';
+  ctx.lineWidth = 1;
+  ctx.fillRect(mmX, mmY, mmW, mmH);
+  ctx.strokeRect(mmX, mmY, mmW, mmH);
+
+  // Player dot on minimap (green)
+  const pmx = mmX + mmW / 2 + (p.x / WORLD_W) * mmW;
+  const pmy = mmY + mmH / 2 + (p.y / WORLD_H) * mmH;
+  ctx.fillStyle = '#0F0';
+  ctx.fillRect(pmx - 3, pmy - 3, 6, 6);
+
+  // Enemy dots on minimap (red)
+  ctx.fillStyle = '#F00';
+  for (const e of g.enemies) {
+    if (e.health <= 0) continue;
+    const emx = mmX + mmW / 2 + (e.x / WORLD_W) * mmW;
+    const emy = mmY + mmH / 2 + (e.y / WORLD_H) * mmH;
+    ctx.fillRect(emx - 2, emy - 2, 4, 4);
+  }
+
+  // Controls hint — desktop only; on mobile the on-screen joystick + button speak for themselves
+  if (!IS_TOUCH) {
+    ctx.font = 'bold 16px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    const hint = 'WASD or ARROWS to Move   |   SPACE to Attack';
+    const hintW = ctx.measureText(hint).width;
+    const padX = 16, padY = 8;
+    const boxW = hintW + padX * 2;
+    const boxH = 16 + padY * 2;
+    const boxX = (VIEW_W - boxW) / 2;
+    const boxY = VIEW_H - boxH - 8;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    roundRect(ctx, boxX, boxY, boxW, boxH, 8);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
+    ctx.lineWidth = 1;
+    roundRect(ctx, boxX, boxY, boxW, boxH, 8);
+    ctx.stroke();
+    ctx.fillStyle = '#FFD700';
+    ctx.fillText(hint, VIEW_W / 2, VIEW_H - 12);
+  }
+
+  drawMobileControls();
+}
+
+// ============================================================
+// Utility Functions
+// ============================================================
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function hitTest(mx, my, rect) {
+  return mx >= rect.x && mx <= rect.x + rect.w && my >= rect.y && my <= rect.y + rect.h;
+}
+
+function aabbOverlap(a, b) {
+  return Math.abs(a.x - b.x) < (a.w + b.w) / 2 &&
+         Math.abs(a.y - b.y) < (a.h + b.h) / 2;
+}
+
+// Canvas mouse position helper
+function getCanvasPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) / rect.width * VIEW_W,
+    y: (e.clientY - rect.top) / rect.height * VIEW_H
+  };
+}
+
+canvas.addEventListener('click', (e) => {
+  AudioManager.unlock();
+  if (!currentScene || !currentScene.onClick) return;
+  const pos = getCanvasPos(e);
+  currentScene.onClick(pos.x, pos.y);
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!currentScene || !currentScene.onMouseMove) return;
+  const pos = getCanvasPos(e);
+  currentScene.onMouseMove(pos.x, pos.y);
+});
+
+// ----- Touch input -----
+function getCanvasPosTouch(t) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (t.clientX - rect.left) / rect.width * VIEW_W,
+    y: (t.clientY - rect.top) / rect.height * VIEW_H
+  };
+}
+
+function handleTouchStart(e) {
+  e.preventDefault();
+  AudioManager.unlock();
+  for (const t of e.changedTouches) {
+    const pos = getCanvasPosTouch(t);
+    if (currentScene === GameSceneController) {
+      // 1. HUD buttons (MENU / MUTE) take priority
+      let hitHud = false;
+      for (const btn of GameSceneController._buttons) {
+        if (hitTest(pos.x, pos.y, btn)) {
+          GameSceneController.onClick(pos.x, pos.y);
+          hitHud = true;
+          break;
+        }
+      }
+      if (hitHud) continue;
+
+      // 2. Attack button (extra slop on radius for finger tap)
+      const a = MobileInput.getAttackBtn();
+      const adx = pos.x - a.cx, ady = pos.y - a.cy;
+      if (MobileInput.attackTouchId === null && Math.sqrt(adx*adx + ady*ady) <= a.r + 20) {
+        MobileInput.attackTouchId = t.identifier;
+        MobileInput.attackPressed = true;
+        continue;
+      }
+
+      // 3. Joystick — any other touch on the left half claims the joystick
+      if (MobileInput.joyTouchId === null && pos.x < VIEW_W / 2) {
+        MobileInput.joyTouchId = t.identifier;
+        updateJoyHandle(pos);
+        continue;
+      }
+    } else {
+      // Title / Menu — treat first touch on a frame as a click
+      if (currentScene && currentScene.onClick) currentScene.onClick(pos.x, pos.y);
+    }
+  }
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === MobileInput.joyTouchId) {
+      updateJoyHandle(getCanvasPosTouch(t));
+    }
+  }
+}
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === MobileInput.joyTouchId) {
+      MobileInput.joyTouchId = null;
+      MobileInput.vx = 0; MobileInput.vy = 0;
+      MobileInput.joyHandleX = 0; MobileInput.joyHandleY = 0;
+    }
+    if (t.identifier === MobileInput.attackTouchId) {
+      MobileInput.attackTouchId = null;
+      MobileInput.attackPressed = false;
+    }
+  }
+}
+
+canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+function drawMobileControls() {
+  if (!IS_TOUCH) return;
+  const a = MobileInput.getJoyAnchor();
+  const r = MobileInput.joyRadius;
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+
+  // Joystick base (white outlined circle)
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(a.cx, a.cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Joystick handle (white filled circle)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(a.cx + MobileInput.joyHandleX, a.cy + MobileInput.joyHandleY, r / 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Attack button (red filled circle)
+  const ab = MobileInput.getAttackBtn();
+  ctx.fillStyle = '#FF0000';
+  ctx.beginPath();
+  ctx.arc(ab.cx, ab.cy, ab.r, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ============================================================
+// Main Game Loop
+// ============================================================
+let lastTime = 0;
+
+function gameLoop(timestamp) {
+  const dt = Math.min((timestamp - lastTime) / 1000, 0.05); // Cap at 50ms
+  lastTime = timestamp;
+
+  if (currentScene) {
+    if (currentScene.update) currentScene.update(dt);
+    if (currentScene.draw) currentScene.draw();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// Boot
+// ============================================================
+async function boot() {
+  // Loading screen
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+  ctx.fillStyle = '#fff';
+  ctx.font = '24px "Courier New", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Loading...', VIEW_W / 2, VIEW_H / 2);
+
+  await loadAllAssets();
+
+  // Queue title music — will actually start on first user gesture (browser autoplay policy)
+  AudioManager.playMusic('Sovereign_Dawn.mp3', true);
+
+  switchScene(TitleScene);
+  requestAnimationFrame(gameLoop);
+}
+
+boot();
+</script>
+</body>
+</html>

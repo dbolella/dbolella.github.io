@@ -1,0 +1,288 @@
+/* =========================================================================
+   CAPTAIN SWIFTUI — Colors & Typography
+   =========================================================================
+   Brand: nautical captain meets retro 16/32-bit pixel tech meets modern Swift.
+   Core palette pulled from the low-poly captain mark:
+     - Deep navy (night sea) — primary surface / background
+     - Swift sky blue      — primary accent (the pixel bird badge)
+     - Amber/saffron       — warm highlight (beard, rope)
+     - Cream bone          — hat / light tone
+     - Deep teal           — shadow mid-tone
+   ========================================================================= */
+
+/* --- Webfonts ---------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Press+Start+2P&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* Trade Winds — THE Captain SwiftUI wordmark face (local, ships with kit). */
+@font-face {
+  font-family: 'Trade Winds';
+  src: url('../fonts/TradeWinds-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ===== BRAND COLORS ==================================================
+     Pulled from the live site at dbolella.github.io. The site is the
+     canonical source of truth for the web palette; portrait colors
+     (amber beard, cream hat) are illustration-only.
+     ==================================================================== */
+
+  /* Ocean — canvas scale (from site tokens) */
+  --navy-950: #040d1a;   /* --color-ocean-deep, page bg */
+  --navy-900: #071428;   /* --color-ocean-mid, mid wash */
+  --navy-800: #0a1f3d;   /* --color-ocean-surface, card wash */
+  --navy-700: #0f2b52;   /* (tuned for elevation) */
+  --navy-600: #163a6c;
+
+  /* Captain Cyan — primary accent (THE Swift/cyan signature, #00E5FF) */
+  --cyan-50:  #e6feff;
+  --cyan-100: #b3f9ff;
+  --cyan-200: #80f2ff;
+  --cyan-300: #4deaff;
+  --cyan-400: #33eeff;   /* hover lift on primary */
+  --cyan-500: #00e5ff;   /* --color-cyan, THE brand cyan */
+  --cyan-600: #00b8d4;
+  --cyan-700: #0091a8;
+  --cyan-dim: rgba(0, 229, 255, 0.15);  /* --color-cyan-dim */
+
+  /* Purple — secondary accent, used in cyan→purple gradients */
+  --purple-300: #d4a5ff;
+  --purple-400: #bd85fa;
+  --purple-500: #a855f7;   /* --color-purple */
+  --purple-600: #8e3fd4;
+  --purple-dim: rgba(168, 85, 247, 0.12);   /* --color-purple-dim */
+
+  /* Portrait-only warm accents (illustration, not UI) */
+  --amber-400: #f5b547;    /* beard/rope — only in captain artwork */
+  --cream-50:  #fbf6e9;    /* hat/bone — only in captain artwork */
+
+  /* Glass tokens — from the site */
+  --glass-fill:   rgba(255, 255, 255, 0.06);  /* --color-glass-light */
+  --glass-border: rgba(255, 255, 255, 0.12);  /* --color-glass-border */
+  --blur-glass:   blur(20px) saturate(180%);
+  --blur-card:    blur(14px) saturate(160%);
+
+  /* Text — from site's --color-text */
+  --text-primary:  #e8edf4;
+  --text-muted:    rgba(232, 237, 244, 0.65);
+  --text-faint:    rgba(232, 237, 244, 0.35);
+
+  /* Status */
+  --success: #35c48a;
+  --warning: #f5b547;
+  --danger:  #e5484d;
+
+  /* ===== SEMANTIC TOKENS (dark theme = the ONLY theme) ================== */
+  --bg:         var(--navy-950);
+  --bg-elev-1:  var(--navy-900);
+  --bg-elev-2:  var(--navy-800);
+  --surface-glass:        var(--glass-fill);
+  --surface-glass-strong: rgba(255, 255, 255, 0.10);
+
+  --fg1: var(--text-primary);   /* primary text on dark */
+  --fg2: var(--text-muted);     /* secondary */
+  --fg3: var(--text-faint);     /* tertiary / meta */
+  --fg-accent: var(--cyan-500);
+  --fg-gradient: linear-gradient(90deg, var(--cyan-500), var(--purple-500));
+
+  --border-1: var(--glass-border);
+  --border-2: rgba(255, 255, 255, 0.20);
+  --border-accent: rgba(0, 229, 255, 0.3);
+
+  --link:       var(--cyan-500);
+  --link-hover: var(--cyan-400);
+
+  /* Signature brand gradient bgs (from site body::before) */
+  --bg-canvas:
+    radial-gradient(ellipse 80% 60% at 20% 10%,  rgba(0, 80, 160, 0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 80%,  rgba(100, 20, 180, 0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, var(--navy-900) 0%, var(--navy-950) 100%);
+
+  /* ===== TYPOGRAPHY ==================================================== */
+  --font-display:  'Trade Winds', 'Pirata One', 'Pieces of Eight', ui-serif, serif;
+  --font-heading:  -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, system-ui, sans-serif;
+  --font-body:     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  --font-mono:     'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+  --font-pixel:    'Press Start 2P', 'VT323', monospace;
+  /* Alt book-display font for rounded-geometric moments (book cover) */
+  --font-book:     'Fredoka', 'Baloo 2', var(--font-heading);
+
+  /* Scale (fluid-ish, 16px base) */
+  --fs-xs:    12px;
+  --fs-sm:    14px;
+  --fs-base:  16px;
+  --fs-md:    18px;
+  --fs-lg:    20px;
+  --fs-xl:    24px;
+  --fs-2xl:   32px;
+  --fs-3xl:   44px;
+  --fs-4xl:   60px;
+  --fs-5xl:   80px;
+
+  --lh-tight:  1.1;
+  --lh-snug:   1.25;
+  --lh-body:   1.55;
+  --lh-loose:  1.75;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;
+  --tracking-pixel:  0.08em;
+
+  /* ===== SPACING (4pt grid) =========================================== */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ===== RADII ========================================================= */
+  /* Radii aligned to site tokens: --radius-sm 10, --radius-inner 16, --radius-outer 24 */
+  --radius-sm:    10px;   /* --radius-sm (buttons, nav pills) */
+  --radius-md:    12px;
+  --radius-lg:    16px;   /* --radius-inner (btn-primary, inner cards) */
+  --radius-xl:    24px;   /* --radius-outer (glass cards, nav, hero) */
+  --radius-2xl:   32px;
+  --radius-pill:  999px;
+  --radius-pixel: 0px;    /* retro hard corners, offbrand-for-site use only */
+
+  /* ===== SHADOWS / ELEVATION ========================================== */
+  --shadow-sm: 0 1px 2px rgba(4, 13, 26, 0.4);
+  --shadow-md: 0 8px 40px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 60px -10px rgba(0, 0, 0, 0.5);
+  /* Cyan glow — the signature primary-button hover from the site */
+  --shadow-cyan-glow: 0 0 32px rgba(0, 229, 255, 0.45);
+  --shadow-cyan-soft: 0 0 20px rgba(0, 229, 255, 0.4);
+  /* Liquid glass — inset highlight + soft drop */
+  --shadow-glass:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 8px 40px rgba(0, 0, 0, 0.3);
+  /* Pixel hard shadow — 4px offset, no blur */
+  --shadow-pixel:       4px 4px 0 0 var(--navy-950);
+  --shadow-pixel-cyan:  4px 4px 0 0 var(--cyan-500);
+  --shadow-pixel-amber: 4px 4px 0 0 var(--amber-400);
+
+  /* ===== MOTION ======================================================= */
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in:    cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-swell: cubic-bezier(0.34, 1.56, 0.64, 1);  /* slight overshoot — waves */
+  --dur-fast:   140ms;
+  --dur-med:    260ms;
+  --dur-slow:   500ms;
+}
+
+/* ===== SEMANTIC TYPE CLASSES ============================================
+   Use these as typographic roles — NEVER inline font-sizes in designs.
+   ======================================================================= */
+
+.t-display {
+  font-family: var(--font-display);
+  font-size: var(--fs-5xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg1);
+  font-weight: 400; /* Pirata One is display-weight only */
+}
+
+.t-h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-4xl);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  color: var(--fg1);
+}
+
+.t-h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  color: var(--fg1);
+}
+
+.t-h3 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  line-height: var(--lh-snug);
+  color: var(--fg1);
+}
+
+.t-h4 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: var(--lh-snug);
+  color: var(--fg1);
+}
+
+.t-body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  color: var(--fg1);
+}
+
+.t-body-lg {
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  color: var(--fg1);
+}
+
+.t-caption {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--fg2);
+  line-height: var(--lh-body);
+}
+
+.t-meta {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--fg3);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.t-code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--fg1);
+  background: var(--bg-elev-1);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-1);
+}
+
+.t-pixel {
+  font-family: var(--font-pixel);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-pixel);
+  text-transform: uppercase;
+  color: var(--cyan-500);
+  line-height: 1.6;
+}
+
+.t-wordmark {
+  /* Emulates the Captain SwiftUI rough italic pirate wordmark */
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-3xl);
+  letter-spacing: 0.01em;
+  color: var(--fg1);
+}
+
+/* ===== LINK / CODE DEFAULTS ============================================ */
+a         { color: var(--link); text-decoration: none; }
+a:hover   { color: var(--link-hover); text-decoration: underline; }
+code, pre { font-family: var(--font-mono); }
